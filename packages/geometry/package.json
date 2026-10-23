@@ -1,0 +1,52 @@
+{
+  "name": "@atp/geometry",
+  "version": "1.0.0",
+  "description": "General-purpose 3D spatial math, polygon mesh data structures, and streaming Wavefront OBJ reader/writer",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./math": {
+      "types": "./dist/math/index.d.ts",
+      "import": "./dist/math/index.js"
+    },
+    "./wavefront": {
+      "types": "./dist/wavefront/index.d.ts",
+      "import": "./dist/wavefront/index.js"
+    },
+    "./mesh": {
+      "types": "./dist/mesh/index.d.ts",
+      "import": "./dist/mesh/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "geometry",
+    "3d",
+    "math",
+    "vector3",
+    "wavefront",
+    "obj",
+    "mesh",
+    "electron"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5",
+    "vitest": "^1.5.0"
+  }
+}
