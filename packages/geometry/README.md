@@ -33,7 +33,7 @@
 
 ## Architectural Overview
 
-`@atp/geometry` is a vendor-neutral 3D geometry engine converted from the core geometric components of the ATC C++ framework. It is strictly decoupled from rigging engines (such as Poser) and designed from the ground up for high-performance desktop applications (Electron) and graphics pipelines:
+`@atp/geometry` is a vendor-neutral 3D geometry engine. It is strictly decoupled from rigging engines (such as Poser) and designed from the ground up for high-performance desktop applications (Electron) and graphics pipelines:
 
 - **Zero Runtime Dependencies**: Pure TypeScript compiling to modern ES2022 JavaScript. Uses only native Node.js streams (`node:fs`, `node:stream`) for disk operations.
 - **Allocation Efficiency**: Mathematical primitives (`Vector3`, `Vector2`, `Rotation3`) provide both immutable return-new and mutable in-place operations (`addInPlace`, `multiplyScalarInPlace`) to avoid garbage collector pressure in tight generation loops.

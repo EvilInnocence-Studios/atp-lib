@@ -48,7 +48,7 @@
 
 ## Architectural Overview
 
-`@atp/poser` is an industrial-strength Poser character and rigging engine converted from the ATC C++ framework. It provides complete AST parsing, serialization, and model definitions for generating Poser `.cr2` (character rigging), `.pp2` (smart and stationary props), and `.pz3` (scene) files in modern TypeScript.
+`@atp/poser` is an industrial-strength Poser character and rigging engine. It provides complete AST parsing, serialization, and model definitions for generating Poser `.cr2` (character rigging), `.pp2` (smart and stationary props), and `.pz3` (scene) files in modern TypeScript.
 
 - **AST Parity**: Directly models Poser's proprietary brace-delimited block structure with recursive nodes (`PoserNode`), supporting property inspection, tree mutation, and path queries (`findPath`).
 - **High-Speed Parsing**: Tokenizes and parses massive 3.3MB CR2 files in **less than 3ms**, allowing template figures and library characters to load instantly in Electron UI threads.
