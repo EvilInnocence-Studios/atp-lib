@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { WavefrontMesh, WavefrontWriter } from '@atp/geometry';
+import { WavefrontMesh, WavefrontWriter } from 'atp-geometry';
 import { Cr2Builder } from './cr2-builder.js';
 import { PoserPathResolver } from '../core/path-resolver.js';
 

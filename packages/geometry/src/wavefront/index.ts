@@ -7,4 +7,9 @@ export {
   WavefrontWriter,
   type WavefrontWriterOptions,
 } from './wavefront-writer.js';
+export {
+  WavefrontMtlWriter,
+  type WavefrontMaterialDef,
+  type WavefrontMtlWriterOptions,
+} from './wavefront-mtl-writer.js';
 export { WavefrontReader } from './wavefront-reader.js';

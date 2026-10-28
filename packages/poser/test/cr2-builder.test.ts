@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
-import { Vector3, WavefrontMesh } from '@atp/geometry';
+import { Vector3, WavefrontMesh } from 'atp-geometry';
 import {
   Cr2Builder,
   PoserAssetPipeline,
@@ -171,5 +171,79 @@ describe('Cr2Builder & Poser Asset Pipeline', () => {
     const wm = builder.root.getActor('bone1')?.getWeightMap('bone1_zrot');
     expect(wm?.getWeight(0)).toBe(1.0);
     expect(wm?.getWeight(5)).toBe(0.5);
+  });
+
+  it('should support full rigging options in addBone and ERC methods in Cr2Builder', () => {
+    const builder = new Cr2Builder('HairRig');
+
+    // Root bone
+    const head = builder.addBone({
+      name: 'head',
+      origin: [0, 1.7, 0],
+      endPoint: [0, 1.8, 0],
+    });
+
+    // Bone with rotateOrder, hasGeom, geomHandler, sphereFalloff array, parentName
+    const tail1 = builder.addBone({
+      name: 'tail_1',
+      parentName: 'head',
+      origin: [0, 1.55, 0],
+      endPoint: [0.05, 1.48, -0.06],
+      rotateOrder: 'zyx',
+      hasGeom: 1,
+      geomHandler: 13,
+      sphereFalloff: {
+        center: [0, 1.55, 0],
+        innerRadius: 0.02,
+        outerRadius: 0.04,
+      },
+    });
+
+    expect(tail1.getRotateOrder()).toBe('zyx');
+    expect(tail1.getHasGeom()).toBe(1);
+    expect(tail1.getGeomHandler()).toEqual({ handlerType: 13, actorName: 'tail_1' });
+    expect(tail1.getParent()).toBe('head:1');
+
+    // Bone with sphereFalloff as Vector3
+    const tail2 = builder.addBone({
+      name: 'tail_2',
+      parentName: 'tail_1',
+      origin: [0.05, 1.48, -0.06],
+      endPoint: [0.1, 1.35, -0.1],
+      sphereFalloff: {
+        center: new Vector3(0.05, 1.48, -0.06),
+        innerRadius: 0.015,
+        outerRadius: 0.035,
+      },
+    });
+    expect(tail2.getSphereFalloff()?.innerRadius).toBe(0.015);
+
+    // ERC Master dial on head
+    const dial = builder.addMasterDial('head', 'tail_Curl', 'Curl (tail)', -100, 100, 0.02);
+    expect(dial.name).toBe('valueParm tail_Curl');
+
+    // Slave links on tail bones
+    builder.addSlaveLink('tail_1', 'xrot', 'head:1', 'tail_Curl', 0.85);
+    builder.addSlaveLink('tail_2', 'xrot', 'head:1', 'tail_Curl', 0.95);
+
+    const cr2Text = builder.toString();
+    expect(cr2Text).toContain('geomHandlerGeom 13 tail_1\r\n');
+    expect(cr2Text).toContain('hasGeom 1\r\n');
+    expect(cr2Text).toContain('parent head:1\r\n');
+    expect(cr2Text).toContain('rotateOrder zyx\r\n');
+    expect(cr2Text).toContain('sphere\r\n');
+    expect(cr2Text).toContain('innerRad 0.020000\r\n');
+    expect(cr2Text).toContain('valueParm tail_Curl\r\n');
+    expect(cr2Text).toContain('valueOpDeltaAdd\r\n');
+    expect(cr2Text).toContain('deltaAddDelta 0.8500\r\n');
+
+    // Error handling for missing actors
+    expect(() =>
+      builder.addMasterDial('missingActor', 'dial', 'Dial')
+    ).toThrow("Actor 'missingActor' not found in CR2 document");
+
+    expect(() =>
+      builder.addSlaveLink('missingActor', 'xrot', 'head', 'dial', 1.0)
+    ).toThrow("Actor 'missingActor' not found in CR2 document");
   });
 });

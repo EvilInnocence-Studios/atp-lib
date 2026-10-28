@@ -7,6 +7,7 @@ import {
   WavefrontMesh,
   WavefrontWriter,
   WavefrontReader,
+  WavefrontMtlWriter,
 } from '../src/index.js';
 
 describe('Wavefront OBJ Engine & Extended Mesh Features', () => {
@@ -297,6 +298,86 @@ describe('Wavefront OBJ Engine & Extended Mesh Features', () => {
     const mesh = await WavefrontReader.loadFromFile(fixturePath);
     expect(mesh.vertices.length).toBeGreaterThan(100);
     expect(mesh.faces.length).toBeGreaterThan(100);
+  });
+
+  describe('WavefrontMtlWriter', () => {
+    it('should format default material attributes with illum 2 and 4-decimal precision', () => {
+      const materials = [{ name: 'Hair_Material' }];
+      const output = WavefrontMtlWriter.writeToString(materials);
+
+      expect(output).toContain('# Wavefront MTL Material Library\r\n');
+      expect(output).toContain('newmtl Hair_Material\r\n');
+      expect(output).toContain('Ka 0.2000 0.2000 0.2000\r\n');
+      expect(output).toContain('Kd 0.7200 0.4800 0.3200\r\n');
+      expect(output).toContain('Ks 0.4500 0.4500 0.4500\r\n');
+      expect(output).toContain('Ns 45.0000\r\n');
+      expect(output).toContain('illum 2\r\n');
+      expect(output).toContain('d 1.0000\r\n');
+    });
+
+    it('should emit map channels (map_Kd, map_d, map_Bump, map_Ks) and custom properties when defined', () => {
+      const materials = [
+        {
+          name: 'Hair_Material',
+          kaColor: [0.1, 0.15, 0.2] as [number, number, number],
+          kdColor: [0.8, 0.5, 0.3] as [number, number, number],
+          ksColor: [0.3, 0.3, 0.3] as [number, number, number],
+          nsExponent: 50,
+          illum: 1,
+          dissolve: 0.95,
+          diffuseMap: ':Runtime:Textures:PoserHairMaker:Figure_diffuse.png',
+          transparencyMap: ':Runtime:Textures:PoserHairMaker:Figure_trans.png',
+          bumpMap: ':Runtime:Textures:PoserHairMaker:Figure_normal.png',
+          specularMap: ':Runtime:Textures:PoserHairMaker:Figure_spec.png',
+        },
+      ];
+
+      const output = WavefrontMtlWriter.writeToString(materials, {
+        headerComment: 'Custom MTL Header',
+        precision: 2,
+      });
+
+      expect(output).toContain('# Custom MTL Header\r\n');
+      expect(output).toContain('newmtl Hair_Material\r\n');
+      expect(output).toContain('Ka 0.10 0.15 0.20\r\n');
+      expect(output).toContain('Kd 0.80 0.50 0.30\r\n');
+      expect(output).toContain('Ks 0.30 0.30 0.30\r\n');
+      expect(output).toContain('Ns 50.00\r\n');
+      expect(output).toContain('illum 1\r\n');
+      expect(output).toContain('d 0.95\r\n');
+      expect(output).toContain('map_Kd :Runtime:Textures:PoserHairMaker:Figure_diffuse.png\r\n');
+      expect(output).toContain('map_d :Runtime:Textures:PoserHairMaker:Figure_trans.png\r\n');
+      expect(output).toContain('map_Bump :Runtime:Textures:PoserHairMaker:Figure_normal.png\r\n');
+      expect(output).toContain('map_Ks :Runtime:Textures:PoserHairMaker:Figure_spec.png\r\n');
+    });
+
+    it('should omit header comment when headerComment is empty string', () => {
+      const output = WavefrontMtlWriter.writeToString([{ name: 'Test' }], {
+        headerComment: '',
+      });
+      expect(output.startsWith('newmtl Test\r\n')).toBe(true);
+    });
+
+    it('should export materials to a file on disk via exportToFile', async () => {
+      const tmpFile = path.resolve(__dirname, 'test_export_output.mtl');
+      await WavefrontMtlWriter.exportToFile(
+        [{ name: 'File_Material', diffuseMap: 'tex.png' }],
+        tmpFile
+      );
+
+      const content = await fs.readFile(tmpFile, 'utf-8');
+      expect(content).toContain('newmtl File_Material\r\n');
+      expect(content).toContain('map_Kd tex.png\r\n');
+
+      await fs.unlink(tmpFile);
+    });
+
+    it('should reject exportToFile on invalid path', async () => {
+      const invalidPath = path.resolve(__dirname, 'non_existent_dir_123/bad.mtl');
+      await expect(
+        WavefrontMtlWriter.exportToFile([{ name: 'Fail' }], invalidPath)
+      ).rejects.toThrow();
+    });
   });
 });
 

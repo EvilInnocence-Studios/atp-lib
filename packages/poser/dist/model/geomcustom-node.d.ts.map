@@ -1,0 +1,1 @@
+{"version":3,"file":"geomcustom-node.d.ts","sourceRoot":"","sources":["../../src/model/geomcustom-node.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,uBAAuB,CAAC;AAElD,qBAAa,cAAe,SAAQ,SAAS;gBAC/B,MAAM,GAAE,SAAS,GAAG,IAAW,EAAE,eAAe,GAAE,MAAW;IAQzE,UAAU,CAAC,eAAe,EAAE,MAAM,GAAG,IAAI;IAazC,UAAU,IAAI,MAAM;CAQrB"}

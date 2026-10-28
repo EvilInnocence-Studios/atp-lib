@@ -9,7 +9,7 @@ import {
   PoserWriter,
   PoserReader,
 } from '../src/index.js';
-import { Vector3 } from '@atp/geometry';
+import { Vector3 } from 'atp-geometry';
 
 describe('Poser Advanced Models (NodeList, GroupsNode, WeightMap)', () => {
   describe('NodeList', () => {

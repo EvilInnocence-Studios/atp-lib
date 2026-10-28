@@ -24,38 +24,100 @@ export class MaterialNode extends PoserNode {
   }
 
   setTextureMap(texturePath: string): this {
-    const existing = this.children.find((c) => c.name.startsWith('textureMap'));
-    const line = `textureMap ${texturePath} 0 0`;
-    if (existing) {
-      existing.name = line;
-    } else {
-      this.addPropertyNode(line);
+    const formatted = texturePath.startsWith('"') ? texturePath : `"${texturePath}"`;
+    const line = `textureMap ${formatted} 0 0`;
+    this.setOrAddProperty('textureMap', line);
+    return this;
+  }
+
+  setColors(
+    kd?: [number, number, number],
+    ka?: [number, number, number],
+    ks?: [number, number, number]
+  ): this {
+    if (kd) {
+      const line = `KdColor ${kd[0].toFixed(6)} ${kd[1].toFixed(6)} ${kd[2].toFixed(6)} 1`;
+      this.setOrAddProperty('KdColor', line);
+    }
+    if (ka) {
+      const line = `KaColor ${ka[0].toFixed(6)} ${ka[1].toFixed(6)} ${ka[2].toFixed(6)} 1`;
+      this.setOrAddProperty('KaColor', line);
+    }
+    if (ks) {
+      const line = `KsColor ${ks[0].toFixed(6)} ${ks[1].toFixed(6)} ${ks[2].toFixed(6)} 1`;
+      this.setOrAddProperty('KsColor', line);
     }
     return this;
   }
 
   setDiffuseColor(r: number, g: number, b: number, a: number = 1): this {
     const line = `KdColor ${r.toFixed(4)} ${g.toFixed(4)} ${b.toFixed(4)} ${a.toFixed(4)}`;
-    const existing = this.children.find((c) => c.name.startsWith('KdColor'));
-    if (existing) {
-      existing.name = line;
-    } else {
-      this.addPropertyNode(line);
-    }
+    this.setOrAddProperty('KdColor', line);
+    return this;
+  }
+
+  setTransparencyMap(
+    texturePath: string,
+    tMin: number = 1,
+    tMax: number = 0,
+    tExpo: number = 0.6
+  ): this {
+    this.setOrAddProperty('tMin', `tMin ${tMin}`);
+    this.setOrAddProperty('tMax', `tMax ${tMax}`);
+    this.setOrAddProperty('tExpo', `tExpo ${tExpo}`);
+    const formatted = texturePath.startsWith('"') ? texturePath : `"${texturePath}"`;
+    this.setOrAddProperty('transparencyMap', `transparencyMap ${formatted} 0 0`);
+    return this;
+  }
+
+  setBumpMap(texturePath: string, bumpStrength: number = 1): this {
+    this.setOrAddProperty('bumpStrength', `bumpStrength ${bumpStrength}`);
+    const formatted = texturePath.startsWith('"') ? texturePath : `"${texturePath}"`;
+    this.setOrAddProperty('bumpMap', `bumpMap ${formatted} 0 0`);
+    return this;
+  }
+
+  setSpecularMap(texturePath: string): this {
+    const formatted = texturePath.startsWith('"') ? texturePath : `"${texturePath}"`;
+    this.setOrAddProperty('specularMap', `specularMap ${formatted} 0 0`);
+    return this;
+  }
+
+  setNsExponent(nsExponent: number = 45): this {
+    this.setOrAddProperty('nsExponent', `nsExponent ${nsExponent}`);
     return this;
   }
 
   getTextureMap(): string | null {
-    const node = this.children.find((c) => c.name.startsWith('textureMap'));
-    if (node) {
-      const parts = node.name.split(/\s+/);
-      return parts[1] ?? null;
+    return this.extractMapPath('textureMap');
+  }
+
+  getTransparencyMap(): string | null {
+    return this.extractMapPath('transparencyMap');
+  }
+
+  getBumpMap(): string | null {
+    return this.extractMapPath('bumpMap');
+  }
+
+  getSpecularMap(): string | null {
+    return this.extractMapPath('specularMap');
+  }
+
+  private extractMapPath(prefix: string): string | null {
+    const node = this.children.find((c) => c.name.startsWith(prefix));
+    if (!node) return null;
+    const rest = node.name.slice(prefix.length).trim();
+    if (!rest) return null;
+    if (rest.startsWith('"')) {
+      const closingIdx = rest.indexOf('"', 1);
+      return closingIdx !== -1 ? rest.slice(1, closingIdx) : null;
     }
-    return null;
+    return rest.split(/\s+/)[0];
   }
 
   getDiffuseColor(): [number, number, number, number] | null {
-    const node = this.children.find((c) => c.name.startsWith('KdColor'));
+    const node = this.children.find((c) => c.name.toLowerCase().startsWith('kdcolor'));
     if (node) {
       const parts = node.name.split(/\s+/);
       if (parts.length >= 5) {
@@ -70,6 +132,18 @@ export class MaterialNode extends PoserNode {
     return null;
   }
 
+  private setOrAddProperty(prefix: string, line: string): void {
+    const lower = prefix.toLowerCase();
+    const existing = this.children.find((c) => {
+      const cLower = c.name.toLowerCase();
+      return cLower === lower || cLower.startsWith(lower + ' ');
+    });
+    if (existing) {
+      existing.name = line;
+    } else {
+      this.addPropertyNode(line);
+    }
+  }
 
   private addPropertyNode(text: string): void {
     const node = new PoserNode(this, text);

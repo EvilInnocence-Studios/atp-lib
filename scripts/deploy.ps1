@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  PowerShell wrapper for building and deploying @atp/geometry and @atp/poser.
+  PowerShell wrapper for building and deploying atp-geometry and atp-poser.
 
 .DESCRIPTION
   Builds, tests, packs, links, or deploys the packages.

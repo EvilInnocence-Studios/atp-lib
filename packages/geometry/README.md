@@ -1,4 +1,4 @@
-# @atp/geometry
+# atp-geometry
 
 > High-performance, zero-dependency 3D spatial math, polygon mesh data structures, and streaming Wavefront OBJ reader/writer for Node.js, Electron, and modern web environments.
 
@@ -19,8 +19,9 @@
   - [Rotation3](#rotation3)
   - [WavefrontMesh](#wavefrontmesh)
   - [WavefrontWriter](#wavefrontwriter)
+  - [WavefrontMtlWriter](#wavefrontmtlwriter)
   - [WavefrontReader](#wavefrontreader)
-  - [Mesh Facade (@atp/geometry/mesh)](#mesh-facade-atpgeometrymesh)
+  - [Mesh Facade (atp-geometry/mesh)](#mesh-facade-atpgeometrymesh)
 - [Wavefront OBJ Syntax Support](#wavefront-obj-syntax-support)
 - [Recipes & Integration Examples](#recipes--integration-examples)
   - [1. Procedural Hair Ribbon Mesh Generation](#1-procedural-hair-ribbon-mesh-generation)
@@ -33,7 +34,7 @@
 
 ## Architectural Overview
 
-`@atp/geometry` is a vendor-neutral 3D geometry engine. It is strictly decoupled from rigging engines (such as Poser) and designed from the ground up for high-performance desktop applications (Electron) and graphics pipelines:
+`atp-geometry` is a vendor-neutral 3D geometry engine. It is strictly decoupled from rigging engines (such as Poser) and designed from the ground up for high-performance desktop applications (Electron) and graphics pipelines:
 
 - **Zero Runtime Dependencies**: Pure TypeScript compiling to modern ES2022 JavaScript. Uses only native Node.js streams (`node:fs`, `node:stream`) for disk operations.
 - **Allocation Efficiency**: Mathematical primitives (`Vector3`, `Vector2`, `Rotation3`) provide both immutable return-new and mutable in-place operations (`addInPlace`, `multiplyScalarInPlace`) to avoid garbage collector pressure in tight generation loops.
@@ -46,26 +47,26 @@
 
 ```bash
 # npm
-npm install @atp/geometry
+npm install atp-geometry
 
 # yarn
-yarn add @atp/geometry
+yarn add atp-geometry
 ```
 
 ---
 
 ## Module Exports
 
-`@atp/geometry` provides both a root entry point and dedicated subpath imports:
+`atp-geometry` provides both a root entry point and dedicated subpath imports:
 
 ```typescript
 // Root entry point
-import { Vector3, Vector2, Rotation3, WavefrontMesh, WavefrontWriter, WavefrontReader } from '@atp/geometry';
+import { Vector3, Vector2, Rotation3, WavefrontMesh, WavefrontWriter, WavefrontMtlWriter, WavefrontReader } from 'atp-geometry';
 
 // Subpath imports
-import { Vector3, Vector2, Rotation3 } from '@atp/geometry/math';
-import { WavefrontMesh, WavefrontWriter, WavefrontReader } from '@atp/geometry/wavefront';
-import { Mesh, Vertex, TextureCoordinate } from '@atp/geometry/mesh';
+import { Vector3, Vector2, Rotation3 } from 'atp-geometry/math';
+import { WavefrontMesh, WavefrontWriter, WavefrontMtlWriter, WavefrontReader } from 'atp-geometry/wavefront';
+import { Mesh, Vertex, TextureCoordinate } from 'atp-geometry/mesh';
 ```
 
 ---
@@ -77,7 +78,7 @@ import { Mesh, Vertex, TextureCoordinate } from '@atp/geometry/mesh';
 Represents a 3D Cartesian coordinate or direction vector `(x, y, z)`.
 
 ```typescript
-import { Vector3 } from '@atp/geometry';
+import { Vector3 } from 'atp-geometry';
 
 const v = new Vector3(1.0, 2.0, 3.0);
 ```
@@ -119,7 +120,7 @@ const v = new Vector3(1.0, 2.0, 3.0);
 Represents a 2D coordinate `(u, v)` primarily used for UV texture coordinates.
 
 ```typescript
-import { Vector2 } from '@atp/geometry';
+import { Vector2 } from 'atp-geometry';
 
 const uv = new Vector2(0.5, 1.0);
 ```
@@ -144,7 +145,7 @@ const uv = new Vector2(0.5, 1.0);
 Represents 3D Euler angles in degrees `(xrot, yrot, zrot)`.
 
 ```typescript
-import { Rotation3 } from '@atp/geometry';
+import { Rotation3 } from 'atp-geometry';
 
 const rot = new Rotation3(45, 90, 0);
 ```
@@ -167,7 +168,7 @@ const rot = new Rotation3(45, 90, 0);
 In-memory polygon mesh data structure holding 3D geometric vertices, UV texture coordinates, surface normals, and multi-group polygon faces.
 
 ```typescript
-import { WavefrontMesh } from '@atp/geometry';
+import { WavefrontMesh } from 'atp-geometry';
 
 const mesh = new WavefrontMesh();
 ```
@@ -238,7 +239,7 @@ export interface MeshFace {
 Streaming Wavefront `.obj` file serializer.
 
 ```typescript
-import { WavefrontWriter } from '@atp/geometry';
+import { WavefrontWriter } from 'atp-geometry';
 ```
 
 #### Formatting Options
@@ -279,12 +280,64 @@ const objContent = WavefrontWriter.writeToString(mesh);
 
 ---
 
+### WavefrontMtlWriter
+
+Generates standard Wavefront MTL material library files pairing with `WavefrontMesh` and `WavefrontWriter`.
+
+```typescript
+import { WavefrontMtlWriter, type WavefrontMaterialDef } from 'atp-geometry';
+```
+
+#### Material Definition Interface
+```typescript
+export interface WavefrontMaterialDef {
+  name: string;
+  kdColor?: [number, number, number];       // Kd r g b (default: [0.72, 0.48, 0.32])
+  kaColor?: [number, number, number];       // Ka r g b (default: [0.2, 0.2, 0.2])
+  ksColor?: [number, number, number];       // Ks r g b (default: [0.45, 0.45, 0.45])
+  nsExponent?: number;                      // Ns (default: 45)
+  illum?: number;                           // illum (default: 2)
+  dissolve?: number;                        // d (default: 1.0)
+  diffuseMap?: string;                      // map_Kd
+  transparencyMap?: string;                 // map_d
+  bumpMap?: string;                         // map_Bump
+  specularMap?: string;                     // map_Ks
+}
+```
+
+#### Static Methods
+
+##### 1. `writeToString(materials, options?): string`
+Serializes a list of materials to a formatted MTL string with CRLF line breaks.
+
+```typescript
+const mtlContent = WavefrontMtlWriter.writeToString([
+  {
+    name: 'Hair_Material',
+    diffuseMap: ':Runtime:Textures:MyHair_diffuse.png',
+    transparencyMap: ':Runtime:Textures:MyHair_trans.png'
+  }
+]);
+```
+
+##### 2. `exportToFile(materials, filePath, options?): Promise<void>`
+Asynchronously writes material definitions to a file on disk using Node.js streaming.
+
+```typescript
+await WavefrontMtlWriter.exportToFile(materials, 'C:/assets/materials.mtl', {
+  headerComment: 'Hair Materials Library',
+  precision: 4
+});
+```
+
+---
+
 ### WavefrontReader
 
 Robust, high-speed tokenizer for loading arbitrary Wavefront OBJ files into a `WavefrontMesh`.
 
 ```typescript
-import { WavefrontReader } from '@atp/geometry';
+import { WavefrontReader } from 'atp-geometry';
 ```
 
 #### Static Methods
@@ -315,12 +368,12 @@ const mesh = await WavefrontReader.loadFromFile('C:/models/character.obj');
 
 ---
 
-### Mesh Facade (`@atp/geometry/mesh`)
+### Mesh Facade (`atp-geometry/mesh`)
 
-For interoperability with existing ATC codebases, `@atp/geometry/mesh` exports aliased types:
+For interoperability with existing ATC codebases, `atp-geometry/mesh` exports aliased types:
 
 ```typescript
-import { Mesh, Vertex, TextureCoordinate, type FaceVertex, type MeshFace } from '@atp/geometry/mesh';
+import { Mesh, Vertex, TextureCoordinate, type FaceVertex, type MeshFace } from 'atp-geometry/mesh';
 
 const m: Mesh = new Mesh();
 const v: Vertex = new Vertex(0, 1, 0);
@@ -350,7 +403,7 @@ const v: Vertex = new Vertex(0, 1, 0);
 Generate a multi-segmented hair strand mesh divided into three rigging groups (`hairRoot`, `hairMid`, `hairTip`) for Poser or game rigging:
 
 ```typescript
-import { WavefrontMesh, WavefrontWriter, Vector3 } from '@atp/geometry';
+import { WavefrontMesh, WavefrontWriter, Vector3 } from 'atp-geometry';
 
 function generateHairRibbon(strandLength: number = 2.0, segments: number = 10, width: number = 0.04): WavefrontMesh {
   const mesh = new WavefrontMesh();
@@ -409,7 +462,7 @@ In an Electron application main process (`ipcMain` handler):
 
 ```typescript
 import { ipcMain, dialog } from 'electron';
-import { WavefrontMesh, WavefrontWriter } from '@atp/geometry';
+import { WavefrontMesh, WavefrontWriter } from 'atp-geometry';
 
 ipcMain.handle('export-obj', async (event, meshData) => {
   const { filePath } = await dialog.showSaveDialog({
@@ -435,11 +488,11 @@ ipcMain.handle('export-obj', async (event, meshData) => {
 
 ### 3. Converting to Three.js BufferGeometry
 
-Easily bridge `@atp/geometry` meshes into Three.js viewports:
+Easily bridge `atp-geometry` meshes into Three.js viewports:
 
 ```typescript
 import * as THREE from 'three';
-import { WavefrontMesh } from '@atp/geometry';
+import { WavefrontMesh } from 'atp-geometry';
 
 export function toThreeBufferGeometry(mesh: WavefrontMesh): THREE.BufferGeometry {
   const geom = new THREE.BufferGeometry();
@@ -492,7 +545,7 @@ export function toThreeBufferGeometry(mesh: WavefrontMesh): THREE.BufferGeometry
 
 ## Developer Workflow & Testing
 
-This package is managed inside the `@atp` monorepo.
+This package is managed inside the ATP monorepo.
 
 ```bash
 # Run unit tests

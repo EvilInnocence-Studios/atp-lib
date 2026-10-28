@@ -1,6 +1,10 @@
 {
-  "name": "@atp/poser",
-  "version": "1.0.0",
+  "name": "atp-poser",
+  "version": "1.1.0",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "description": "Poser CR2/PP2/PZ3 AST parser, serializer, character rigging model, and fluent figure builder for Electron and Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,7 +37,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@atp/geometry": "^1.0.0"
+    "atp-geometry": "^1.1.0"
   },
   "keywords": [
     "poser",

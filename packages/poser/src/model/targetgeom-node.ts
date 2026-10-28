@@ -1,5 +1,5 @@
 import { PoserNode } from '../core/poser-node.js';
-import { Vector3 } from '@atp/geometry';
+import { Vector3 } from 'atp-geometry';
 
 export class TargetGeomNode extends PoserNode {
   private deltasNode: PoserNode;

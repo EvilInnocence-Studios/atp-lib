@@ -17,12 +17,16 @@ export class PoserWriter {
       stream.write(`${tabs}${node.name}\r\n`);
     }
 
-    if (node.hasChildrenBlock || node.children.length > 0) {
+    if (node.hasChildrenBlock) {
       stream.write(`${tabs}{\r\n`);
       for (const child of node.children) {
         this.writeNodeToStream(child, stream, tabCount + 1);
       }
       stream.write(`${tabs}}\r\n`);
+    } else if (node.children.length > 0) {
+      for (const child of node.children) {
+        this.writeNodeToStream(child, stream, tabCount + 1);
+      }
     }
   }
 

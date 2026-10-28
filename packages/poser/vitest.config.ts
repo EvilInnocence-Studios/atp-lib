@@ -14,7 +14,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@atp/geometry': path.resolve(__dirname, '../geometry/src/index.ts'),
+      'atp-geometry': path.resolve(__dirname, '../geometry/src/index.ts'),
     },
   },
 });

@@ -1,4 +1,4 @@
-import { Vector3 } from '@atp/geometry';
+import { Vector3 } from 'atp-geometry';
 
 export interface SpatialWeight {
   point: Vector3;

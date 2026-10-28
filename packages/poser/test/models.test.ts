@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Vector3 } from '@atp/geometry';
+import { Vector3 } from 'atp-geometry';
 import {
   PoserNode,
   RootNode,
@@ -82,7 +82,37 @@ describe('Poser Models & Rigging Components Coverage', () => {
       const output = PoserWriter.writeToString(mat);
       expect(output).toContain('material HairMat');
       expect(output).toContain('KdColor 0.8000 0.5000 0.2000 1.0000');
-      expect(output).toContain('textureMap :Runtime:Textures:Hair.jpg');
+      expect(output).toContain('textureMap ":Runtime:Textures:Hair.jpg" 0 0');
+    });
+
+    it('should support full hair shaders with setColors, transparency, bump, specular, and nsExponent', () => {
+      const mat = new MaterialNode(null, 'Hair_Material');
+      mat.setColors([1.0, 1.0, 1.0], [0.0, 0.0, 0.0], [0.35, 0.35, 0.35]);
+      mat.setNsExponent(45);
+      mat.setTextureMap(':Runtime:Textures:PoserHairMaker:MyHair_diffuse.png');
+      mat.setTransparencyMap(':Runtime:Textures:PoserHairMaker:MyHair_trans.png', 1, 0, 0.6);
+      mat.setBumpMap(':Runtime:Textures:PoserHairMaker:MyHair_normal.png', 1);
+      mat.setSpecularMap(':Runtime:Textures:PoserHairMaker:MyHair_spec.png');
+
+      expect(mat.getTextureMap()).toBe(':Runtime:Textures:PoserHairMaker:MyHair_diffuse.png');
+      expect(mat.getTransparencyMap()).toBe(':Runtime:Textures:PoserHairMaker:MyHair_trans.png');
+      expect(mat.getBumpMap()).toBe(':Runtime:Textures:PoserHairMaker:MyHair_normal.png');
+      expect(mat.getSpecularMap()).toBe(':Runtime:Textures:PoserHairMaker:MyHair_spec.png');
+
+      const output = PoserWriter.writeToString(mat);
+      expect(output).toContain('material Hair_Material\r\n');
+      expect(output).toContain('KdColor 1.000000 1.000000 1.000000 1\r\n');
+      expect(output).toContain('KaColor 0.000000 0.000000 0.000000 1\r\n');
+      expect(output).toContain('KsColor 0.350000 0.350000 0.350000 1\r\n');
+      expect(output).toContain('nsExponent 45\r\n');
+      expect(output).toContain('tMin 1\r\n');
+      expect(output).toContain('tMax 0\r\n');
+      expect(output).toContain('tExpo 0.6\r\n');
+      expect(output).toContain('bumpStrength 1\r\n');
+      expect(output).toContain('textureMap ":Runtime:Textures:PoserHairMaker:MyHair_diffuse.png" 0 0\r\n');
+      expect(output).toContain('transparencyMap ":Runtime:Textures:PoserHairMaker:MyHair_trans.png" 0 0\r\n');
+      expect(output).toContain('bumpMap ":Runtime:Textures:PoserHairMaker:MyHair_normal.png" 0 0\r\n');
+      expect(output).toContain('specularMap ":Runtime:Textures:PoserHairMaker:MyHair_spec.png" 0 0\r\n');
     });
 
     it('should test MaterialNode updating existing lines, blank node getters, and bare textureMap', () => {
@@ -93,30 +123,78 @@ describe('Poser Models & Rigging Components Coverage', () => {
       mat.setDiffuseColor(0.5, 0.6, 0.7, 0.8);
       expect(mat.getDiffuseColor()).toEqual([0.5, 0.6, 0.7, 0.8]);
 
-      // Updating existing textureMap
+      // Updating existing textureMap, bumpMap, transparencyMap, specularMap
       mat.setTextureMap('path1.jpg');
       mat.setTextureMap('path2.jpg');
       expect(mat.getTextureMap()).toBe('path2.jpg');
+
+      mat.setTransparencyMap('trans1.png', 0, 1, 0.5);
+      mat.setTransparencyMap('trans2.png');
+      expect(mat.getTransparencyMap()).toBe('trans2.png');
+
+      mat.setBumpMap('bump1.png', 0.5);
+      mat.setBumpMap('bump2.png');
+      expect(mat.getBumpMap()).toBe('bump2.png');
+
+      mat.setSpecularMap('spec1.png');
+      mat.setSpecularMap('spec2.png');
+      expect(mat.getSpecularMap()).toBe('spec2.png');
+
+      // Pre-quoted paths (starts with quote)
+      mat.setTextureMap('"quoted_tex.png"');
+      expect(mat.getTextureMap()).toBe('quoted_tex.png');
+      mat.setTransparencyMap('"quoted_trans.png"');
+      expect(mat.getTransparencyMap()).toBe('quoted_trans.png');
+      mat.setBumpMap('"quoted_bump.png"');
+      expect(mat.getBumpMap()).toBe('quoted_bump.png');
+      mat.setSpecularMap('"quoted_spec.png"');
+      expect(mat.getSpecularMap()).toBe('quoted_spec.png');
+
+      // Unquoted map property in children
+      const unquotedMat = new MaterialNode(null, 'UnquotedMat');
+      unquotedMat.children = [new PoserNode(unquotedMat, 'textureMap unquoted.png 0 0')];
+      expect(unquotedMat.getTextureMap()).toBe('unquoted.png');
+
+      // Unclosed quote map property in children
+      const unclosedMat = new MaterialNode(null, 'Unclosed');
+      unclosedMat.children = [new PoserNode(unclosedMat, 'textureMap "unclosed')];
+      expect(unclosedMat.getTextureMap()).toBeNull();
+
+      // Partial setColors
+      mat.setColors([0.2, 0.3, 0.4]);
+      mat.setColors(undefined, [0.1, 0.1, 0.1]);
+      mat.setColors(undefined, undefined, [0.9, 0.9, 0.9]);
 
       // Getters on blank node
       const blank = new PoserNode(null, 'material Blank') as unknown as MaterialNode;
       Object.setPrototypeOf(blank, MaterialNode.prototype);
       blank.children = [];
       expect(blank.getTextureMap()).toBeNull();
+      expect(blank.getTransparencyMap()).toBeNull();
+      expect(blank.getBumpMap()).toBeNull();
+      expect(blank.getSpecularMap()).toBeNull();
       expect(blank.getDiffuseColor()).toBeNull();
 
-      // setDiffuseColor when KdColor not present
+      // setDiffuseColor and setColors when properties not present
       const bareMat = new PoserNode(null, 'material Bare') as unknown as MaterialNode;
       Object.setPrototypeOf(bareMat, MaterialNode.prototype);
       bareMat.children = [];
       bareMat.setDiffuseColor(0.2, 0.4, 0.6);
       expect(bareMat.getDiffuseColor()?.slice(0, 3)).toEqual([0.2, 0.4, 0.6]);
 
-      // getTextureMap when property is bare 'textureMap' without argument
+      // getTextureMap when property is bare without argument
       const bareTexMat = new MaterialNode(null, 'BareTex');
       bareTexMat.children = [];
       bareTexMat.addPropertyNode('textureMap');
+      bareTexMat.addPropertyNode('transparencyMap');
+      bareTexMat.addPropertyNode('bumpMap');
+      bareTexMat.addPropertyNode('specularMap');
+      bareTexMat.addPropertyNode('KdColor 1');
       expect(bareTexMat.getTextureMap()).toBeNull();
+      expect(bareTexMat.getTransparencyMap()).toBeNull();
+      expect(bareTexMat.getBumpMap()).toBeNull();
+      expect(bareTexMat.getSpecularMap()).toBeNull();
+      expect(bareTexMat.getDiffuseColor()).toBeNull();
     });
   });
 
@@ -171,6 +249,110 @@ describe('Poser Models & Rigging Components Coverage', () => {
       expect(readded).toBe(wm);
       expect(readded.numVerts).toBe(60);
     });
+
+    it('should support rigging enhancements: rotateOrder, geomHandler, hasGeom, parent, and sphereFalloff', () => {
+      const actor = new ActorNode(null, 'tail_1', 1);
+      actor.setRotateOrder('zyx');
+      actor.setGeomHandler(13, 'tail_1');
+      actor.setHasGeom(1);
+      actor.setParent('head:1');
+      actor.setOrigin(new Vector3(0, 1.55, 0));
+      actor.setEndPoint(new Vector3(0.05, 1.48, -0.06));
+      actor.setOrientation(new Vector3(0, 0, 0));
+      actor.setSphereFalloff(new Vector3(0, 1.55, 0), 0.02, 0.04);
+
+      expect(actor.getRotateOrder()).toBe('zyx');
+      expect(actor.getGeomHandler()).toEqual({ handlerType: 13, actorName: 'tail_1' });
+      expect(actor.getHasGeom()).toBe(1);
+      expect(actor.getParent()).toBe('head:1');
+
+      const falloff = actor.getSphereFalloff();
+      expect(falloff?.center.toArray()).toEqual([0, 1.55, 0]);
+      expect(falloff?.innerRadius).toBe(0.02);
+      expect(falloff?.outerRadius).toBe(0.04);
+
+      const output = PoserWriter.writeToString(actor);
+      expect(output).toContain('actor tail_1:1\r\n');
+      expect(output).toContain('geomHandlerGeom 13 tail_1\r\n');
+      expect(output).toContain('hasGeom 1\r\n');
+      expect(output).toContain('parent head:1\r\n');
+      expect(output).toContain('rotateOrder zyx\r\n');
+      expect(output).toContain('sphere\r\n');
+      expect(output).toContain('center 0.000000 1.550000 0.000000\r\n');
+      expect(output).toContain('innerRad 0.020000\r\n');
+      expect(output).toContain('outerRad 0.040000\r\n');
+    });
+
+    it('should test updating existing rigging lines and edge case getters on ActorNode', () => {
+      const actor = new ActorNode(null, 'tail', 1);
+
+      // Default arguments
+      actor.setRotateOrder();
+      expect(actor.getRotateOrder()).toBe('zyx');
+      actor.setRotateOrder('xyz');
+      expect(actor.getRotateOrder()).toBe('xyz');
+
+      actor.setGeomHandler();
+      expect(actor.getGeomHandler()).toEqual({ handlerType: 13, actorName: 'tail' });
+      actor.setGeomHandler(14, 'customTail');
+      expect(actor.getGeomHandler()).toEqual({ handlerType: 14, actorName: 'customTail' });
+
+      actor.setHasGeom(true);
+      expect(actor.getHasGeom()).toBe(1);
+      actor.setHasGeom(false);
+      expect(actor.getHasGeom()).toBe(0);
+
+      actor.setParent('head');
+      expect(actor.getParent()).toBe('head:1');
+      actor.setParent('UNIVERSE');
+      expect(actor.getParent()).toBe('UNIVERSE');
+
+      actor.setSphereFalloff(new Vector3(1, 2, 3), 0.1, 0.2);
+      actor.setSphereFalloff(new Vector3(4, 5, 6), 0.3, 0.4);
+      expect(actor.getSphereFalloff()?.center.toArray()).toEqual([4, 5, 6]);
+
+      // Blank actor node getters
+      const blank = new PoserNode(null, 'actor blank:1') as unknown as ActorNode;
+      Object.setPrototypeOf(blank, ActorNode.prototype);
+      blank.children = [];
+      expect(blank.getRotateOrder()).toBeNull();
+      expect(blank.getGeomHandler()).toBeNull();
+      expect(blank.getHasGeom()).toBeNull();
+      expect(blank.getParent()).toBeNull();
+      expect(blank.getSphereFalloff()).toBeNull();
+
+      // Incomplete node getters (bare properties without values)
+      const barePropsActor = new PoserNode(null, 'actor bare:1') as unknown as ActorNode;
+      Object.setPrototypeOf(barePropsActor, ActorNode.prototype);
+      barePropsActor.actorName = 'bare';
+      barePropsActor.children = [
+        new PoserNode(barePropsActor, 'rotateOrder'),
+        new PoserNode(barePropsActor, 'geomHandlerGeom 13'),
+        new PoserNode(barePropsActor, 'parent'),
+      ];
+      expect(barePropsActor.getRotateOrder()).toBeNull();
+      expect(barePropsActor.getGeomHandler()).toEqual({ handlerType: 13, actorName: 'bare' });
+      expect(barePropsActor.getParent()).toBeNull();
+
+      // Incomplete sphere node getters (missing center, missing innerRad, missing outerRad)
+      const incompleteSphereActor = new PoserNode(null, 'actor test:1') as unknown as ActorNode;
+      Object.setPrototypeOf(incompleteSphereActor, ActorNode.prototype);
+      incompleteSphereActor.children = [new PoserNode(incompleteSphereActor, 'sphere')];
+      expect(incompleteSphereActor.getSphereFalloff()).toBeNull();
+
+      const sphereWithCenterOnly = new PoserNode(null, 'sphere');
+      sphereWithCenterOnly.children = [new PoserNode(sphereWithCenterOnly, 'center 0 0 0')];
+      incompleteSphereActor.children = [sphereWithCenterOnly];
+      expect(incompleteSphereActor.getSphereFalloff()).toBeNull();
+
+      const sphereWithInnerOnly = new PoserNode(null, 'sphere');
+      sphereWithInnerOnly.children = [
+        new PoserNode(sphereWithInnerOnly, 'center 0 0 0'),
+        new PoserNode(sphereWithInnerOnly, 'innerRad 1'),
+      ];
+      incompleteSphereActor.children = [sphereWithInnerOnly];
+      expect(incompleteSphereActor.getSphereFalloff()).toBeNull();
+    });
   });
 
   describe('ChannelsNode and GroupsNode edge cases', () => {
@@ -180,6 +362,52 @@ describe('Poser Models & Rigging Components Coverage', () => {
       const m2 = ch.addMorph('Wind');
       expect(m1).toBe(m2);
       expect(ch.getMorphs().length).toBe(1);
+    });
+
+    it('should support ERC master control dials (addMasterDial) and joint slave links (addSlaveLink)', () => {
+      const ch = new ChannelsNode(null);
+      ch.createDefaultChannels();
+
+      const master = ch.addMasterDial('tail_Curl', 'Curl (tail)', -100, 100, 0.02);
+      expect(ch.getMasterDials().length).toBe(1);
+      expect(ch.getMasterDial('tail_Curl')).toBe(master);
+
+      // Re-adding returns existing
+      const readded = ch.addMasterDial('tail_Curl', 'Curl (tail)');
+      expect(readded).toBe(master);
+
+      ch.addSlaveLink('xrot', 'head:1', 'tail_Curl', 0.85);
+      ch.addSlaveLink('yrot', 'head', 'tail_Curl', 0.5);
+      ch.addSlaveLink('zrot', '_SELF_', 'tail_Curl', 1.0);
+
+      // Calling addSlaveLink on missing channels auto-creates xrot, yrot, zrot
+      const emptyCh = new ChannelsNode(null);
+      emptyCh.addSlaveLink('xrot', 'head:1', 'tail_Curl', 0.5);
+      emptyCh.addSlaveLink('yrot', 'Figure', 'tail_Curl', 0.5);
+      emptyCh.addSlaveLink('zrot', 'Figure', 'tail_Curl', 0.5);
+      expect(emptyCh.children.some((c) => c.name.includes('xrot'))).toBe(true);
+      expect(emptyCh.children.some((c) => c.name.includes('yrot'))).toBe(true);
+      expect(emptyCh.children.some((c) => c.name.includes('zrot'))).toBe(true);
+
+      const output = PoserWriter.writeToString(ch);
+      expect(output).toContain('valueParm tail_Curl\r\n');
+      expect(output).toContain('name Curl (tail)\r\n');
+      expect(output).toContain('initValue 0\r\n');
+      expect(output).toContain('hidden 0\r\n');
+      expect(output).toContain('forceLimits 0\r\n');
+      expect(output).toContain('min -100\r\n');
+      expect(output).toContain('max 100\r\n');
+      expect(output).toContain('trackingScale 0.02\r\n');
+      expect(output).toContain('keys\r\n');
+      expect(output).toContain('static 0\r\n');
+      expect(output).toContain('k 0 0\r\n');
+      expect(output).toContain('interpStyleLocked 0\r\n');
+
+      expect(output).toContain('valueOpDeltaAdd\r\n');
+      expect(output).toContain('\t\t\t_SELF_\r\n');
+      expect(output).toContain('\t\t\thead:1\r\n');
+      expect(output).toContain('\t\t\ttail_Curl\r\n');
+      expect(output).toContain('\t\tdeltaAddDelta 0.8500\r\n');
     });
 
     it('should query group names and parameter names on GroupsNode', () => {

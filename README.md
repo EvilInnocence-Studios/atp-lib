@@ -6,12 +6,12 @@ High-performance 3D spatial geometry, polygon mesh data structures, Wavefront OB
 
 ## Packages
 
-The monorepo contains two independent, highly optimized packages organized under the `@atp` npm scope:
+The monorepo contains two independent, highly optimized packages:
 
 | Package | Version | Description | Documentation |
 | :--- | :---: | :--- | :--- |
-| **[@atp/geometry](file:///p:/Libraries/atc/typescript/packages/geometry)** | `1.0.0` | Generic 3D spatial math (`Vector2`, `Vector3`, `Rotation3`), polygon mesh structures, and streaming Wavefront OBJ reader / writer. Completely agnostic of Poser with zero runtime dependencies. | [Geometry README](file:///p:/Libraries/atc/typescript/packages/geometry/README.md) |
-| **[@atp/poser](file:///p:/Libraries/atc/typescript/packages/poser)** | `1.0.0` | Poser CR2/PP2/PZ3 AST parser, serializer, character rigging model, joint hierarchies, morph deltas, weight maps, fluent `Cr2Builder`, and `PoserAssetPipeline`. | [Poser README](file:///p:/Libraries/atc/typescript/packages/poser/README.md) |
+| **[atp-geometry](file:///p:/Libraries/atc/typescript/packages/geometry)** | `1.1.0` | Generic 3D spatial math (`Vector2`, `Vector3`, `Rotation3`), polygon mesh structures, and streaming Wavefront OBJ / MTL material library reader and writer. Completely agnostic of Poser with zero runtime dependencies. | [Geometry README](file:///p:/Libraries/atc/typescript/packages/geometry/README.md) |
+| **[atp-poser](file:///p:/Libraries/atc/typescript/packages/poser)** | `1.1.0` | Poser CR2/PP2/PZ3 AST parser, serializer, character rigging model, joint hierarchies, ERC master/slave dials, shader materials, morph deltas, weight maps, fluent `Cr2Builder`, and `PoserAssetPipeline`. | [Poser README](file:///p:/Libraries/atc/typescript/packages/poser/README.md) |
 
 ---
 
@@ -19,15 +19,15 @@ The monorepo contains two independent, highly optimized packages organized under
 
 - **Pure TypeScript & Native ESM**: Modern ES2022 output with native Node.js ES modules (`"type": "module"`), strict type-checking, and full TypeScript `.d.ts` declaration map generation.
 - **Subpath Package Exports**: Optimized subpath entry points enable granular tree-shaking and targeted imports:
-  - `@atp/geometry/math`, `@atp/geometry/mesh`, `@atp/geometry/wavefront`
-  - `@atp/poser/core`, `@atp/poser/model`, `@atp/poser/builder`
+  - `atp-geometry/math`, `atp-geometry/mesh`, `atp-geometry/wavefront`
+  - `atp-poser/core`, `atp-poser/model`, `atp-poser/builder`
 - **High-Throughput Streaming & Speed**:
   - Tokenizes and parses 3.3MB production CR2 files in **< 3ms**.
-  - Stream-based disk writers (`exportNodeStream`, `WavefrontWriter.writeToStream`) utilize 64KB buffering to output massive figures with thousands of morph targets without blocking Electron main or renderer processes.
+  - Stream-based disk writers (`exportNodeStream`, `WavefrontWriter.writeToStream`, `WavefrontMtlWriter.writeToStream`) utilize 64KB buffering to output massive figures with thousands of morph targets without blocking Electron main or renderer processes.
 - **Poser Standard Compliance**:
   - Enforces exact tab indentation (`\t`), matching braces `{ ... }`, 6-decimal float formatting, and CRLF (`\r\n`) line breaks for 100% interoperability across Poser 4 through Poser 13+ and DAZ Studio.
 - **100% Code Coverage**:
-  - Both packages maintain **100% Statement, Branch, Function, and Line coverage** across 67 unit tests evaluated with Vitest and the native V8 coverage provider.
+  - Both packages maintain **100% Statement, Branch, Function, and Line coverage** across 77 unit tests evaluated with Vitest and the native V8 coverage provider.
 
 ---
 
@@ -36,7 +36,7 @@ The monorepo contains two independent, highly optimized packages organized under
 ```text
 p:/Libraries/atc/typescript/
 ├── packages/
-│   ├── geometry/                  # @atp/geometry package
+│   ├── geometry/                  # atp-geometry package
 │   │   ├── src/
 │   │   │   ├── math/              # Vector2, Vector3, Rotation3
 │   │   │   ├── mesh/              # MeshVertex, MeshFace polygon structures
@@ -49,7 +49,7 @@ p:/Libraries/atc/typescript/
 │   │   ├── package.json
 │   │   └── tsconfig.json
 │   │
-│   └── poser/                     # @atp/poser package
+│   └── poser/                     # atp-poser package
 │       ├── src/
 │       │   ├── core/              # PoserNode, PoserReader, PoserWriter, PathResolver, NodeList
 │       │   ├── model/             # ActorNode, JointNode, FigureNode, ChannelsNode, WeightMap
@@ -80,8 +80,8 @@ p:/Libraries/atc/typescript/
 Exporting paired Wavefront OBJ geometry and a conforming Poser CR2 character figure in Node.js or Electron:
 
 ```typescript
-import { WavefrontMesh } from '@atp/geometry';
-import { Cr2Builder, PoserAssetPipeline } from '@atp/poser';
+import { WavefrontMesh } from 'atp-geometry';
+import { Cr2Builder, PoserAssetPipeline } from 'atp-poser';
 
 // 1. Construct 3D Geometry
 const mesh = new WavefrontMesh();
@@ -123,7 +123,7 @@ Run from `p:/Libraries/atc/typescript`:
 
 ### Building
 ```bash
-# Build all packages in dependency order (@atp/geometry then @atp/poser)
+# Build all packages in dependency order (atp-geometry then atp-poser)
 yarn build
 
 # Build individual packages
@@ -164,7 +164,7 @@ The root deployment script ([scripts/build-and-deploy.mjs](file:///p:/Libraries/
 node scripts/build-and-deploy.mjs --clean --test --build --pack
 
 # Copy compiled dist/ directly into an external consumer project (e.g. Electron app)
-node scripts/build-and-deploy.mjs --clean --build --copy-to C:/Projects/MyElectronApp/node_modules/@atp
+node scripts/build-and-deploy.mjs --clean --build --copy-to C:/Projects/MyElectronApp
 
 # Display all available options
 node scripts/build-and-deploy.mjs --help

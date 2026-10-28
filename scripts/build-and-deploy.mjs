@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Universal Build and Deploy Script for @atp packages (@atp/geometry and @atp/poser)
+ * Universal Build and Deploy Script for atp packages (atp-geometry and atp-poser)
  *
  * Usage:
  *   node scripts/build-and-deploy.mjs [options]
@@ -31,12 +31,12 @@ const rootDir = path.resolve(__dirname, '..');
 // Ordered by dependency: geometry must be built/deployed before poser
 const packages = [
   {
-    name: '@atp/geometry',
+    name: 'atp-geometry',
     folder: 'geometry',
     dir: path.resolve(rootDir, 'packages', 'geometry'),
   },
   {
-    name: '@atp/poser',
+    name: 'atp-poser',
     folder: 'poser',
     dir: path.resolve(rootDir, 'packages', 'poser'),
   },
@@ -208,17 +208,17 @@ if (flags.link) {
     log(`Registering yarn link for ${pkg.name}...`, colors.cyan);
     run('yarn', ['link'], pkg.dir);
   }
-  log('Packages linked! You can now run `yarn link @atp/geometry` and `yarn link @atp/poser` in any consumer app.', colors.green);
+  log('Packages linked! You can now run `yarn link atp-geometry` and `yarn link atp-poser` in any consumer app.', colors.green);
 }
 
 // 6. Copy to Target Project
 if (flags.copyTo) {
   header(`Step 6: Deploying to Target: ${flags.copyTo}`);
-  const targetNodeModules = path.join(flags.copyTo, 'node_modules', '@atp');
+  const targetNodeModules = path.join(flags.copyTo, 'node_modules');
   fs.mkdirSync(targetNodeModules, { recursive: true });
 
   for (const pkg of packages) {
-    const pkgTargetDir = path.join(targetNodeModules, pkg.folder);
+    const pkgTargetDir = path.join(targetNodeModules, pkg.name);
     log(`Deploying ${pkg.name} -> ${pkgTargetDir}...`, colors.cyan);
 
     // Ensure target dir exists
@@ -242,7 +242,7 @@ if (flags.publish) {
   header('Step 7: Publishing Packages to NPM Registry');
   for (const pkg of packages) {
     log(`Publishing ${pkg.name} (tag: ${flags.tag})...`, colors.cyan);
-    const publishArgs = ['publish', '--access', 'public', '--tag', flags.tag];
+    const publishArgs = ['publish', '--access', 'public', '--tag', flags.tag, '--registry', 'https://registry.npmjs.org/'];
     if (flags.dryRun) publishArgs.push('--dry-run');
     run('npm', publishArgs, pkg.dir);
     log(`  ✓ Published ${pkg.name}`, colors.green);

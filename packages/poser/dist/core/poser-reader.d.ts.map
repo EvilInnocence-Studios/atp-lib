@@ -1,0 +1,1 @@
+{"version":3,"file":"poser-reader.d.ts","sourceRoot":"","sources":["../../src/core/poser-reader.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,SAAS,EAAE,MAAM,iBAAiB,CAAC;AAE5C,qBAAa,WAAW;IACtB;;OAEG;IACH,MAAM,CAAC,WAAW,CAAC,OAAO,EAAE,MAAM,GAAG,SAAS;IAqC9C;;OAEG;WACU,YAAY,CAAC,QAAQ,EAAE,MAAM,GAAG,OAAO,CAAC,SAAS,CAAC;CAIhE"}

@@ -1,5 +1,5 @@
 import { PoserNode } from '../core/poser-node.js';
-import { Vector3 } from '@atp/geometry';
+import { Vector3 } from 'atp-geometry';
 import { VectorNode } from './vector-node.js';
 import { GeomCustomNode } from './geomcustom-node.js';
 import { ChannelsNode } from './channels-node.js';
@@ -102,6 +102,160 @@ export class ActorNode extends PoserNode {
 
   getWeightMaps(): WeightMapNode[] {
     return this.children.filter((c) => c instanceof WeightMapNode) as WeightMapNode[];
+  }
+
+  setRotateOrder(order: string = 'zyx'): this {
+    const text = `rotateOrder ${order}`;
+    const existing = this.children.find((c) => c.name.startsWith('rotateOrder'));
+    if (existing) {
+      existing.name = text;
+    } else {
+      const node = new PoserNode(this, text);
+      node.hasChildrenBlock = false;
+      this.children.push(node);
+    }
+    return this;
+  }
+
+  getRotateOrder(): string | null {
+    const node = this.children.find((c) => c.name.startsWith('rotateOrder'));
+    if (!node) return null;
+    return node.name.split(/\s+/)[1] ?? null;
+  }
+
+  setGeomHandler(handlerType: number = 13, actorName?: string): this {
+    const target = actorName ?? this.actorName;
+    const text = `geomHandlerGeom ${handlerType} ${target}`;
+    const existing = this.children.find((c) => c.name.startsWith('geomHandlerGeom'));
+    if (existing) {
+      existing.name = text;
+    } else {
+      const node = new PoserNode(this, text);
+      node.hasChildrenBlock = false;
+      this.children.push(node);
+    }
+    return this;
+  }
+
+  getGeomHandler(): { handlerType: number; actorName: string } | null {
+    const node = this.children.find((c) => c.name.startsWith('geomHandlerGeom'));
+    if (!node) return null;
+    const parts = node.name.split(/\s+/);
+    return {
+      handlerType: parseInt(parts[1], 10),
+      actorName: parts[2] ?? this.actorName,
+    };
+  }
+
+  setHasGeom(hasGeom: boolean | number): this {
+    const val = typeof hasGeom === 'boolean' ? (hasGeom ? 1 : 0) : hasGeom;
+    const text = `hasGeom ${val}`;
+    const existing = this.children.find((c) => c.name.startsWith('hasGeom'));
+    if (existing) {
+      existing.name = text;
+    } else {
+      const node = new PoserNode(this, text);
+      node.hasChildrenBlock = false;
+      this.children.push(node);
+    }
+    return this;
+  }
+
+  getHasGeom(): number | null {
+    const node = this.children.find((c) => c.name.startsWith('hasGeom'));
+    if (!node) return null;
+    return parseInt(node.name.split(/\s+/)[1], 10);
+  }
+
+  setParent(parentActorName: string): this {
+    const target =
+      parentActorName.includes(':') || parentActorName === 'UNIVERSE'
+        ? parentActorName
+        : `${parentActorName}:1`;
+    const text = `parent ${target}`;
+    const existing = this.children.find((c) => c.name.startsWith('parent'));
+    if (existing) {
+      existing.name = text;
+    } else {
+      const node = new PoserNode(this, text);
+      node.hasChildrenBlock = false;
+      this.children.push(node);
+    }
+    return this;
+  }
+
+  getParent(): string | null {
+    const node = this.children.find((c) => c.name.startsWith('parent'));
+    if (!node) return null;
+    return node.name.split(/\s+/)[1] ?? null;
+  }
+
+  setSphereFalloff(center: Vector3, innerRadius: number, outerRadius: number): this {
+    let sphereNode = this.children.find(
+      (c) => c.name === 'sphere' || c.name.startsWith('sphere ')
+    );
+    if (!sphereNode) {
+      sphereNode = new PoserNode(this, 'sphere');
+      sphereNode.hasChildrenBlock = true;
+      this.children.push(sphereNode);
+    }
+
+    const centerText = `center ${center.x.toFixed(6)} ${center.y.toFixed(6)} ${center.z.toFixed(6)}`;
+    const innerText = `innerRad ${innerRadius.toFixed(6)}`;
+    const outerText = `outerRad ${outerRadius.toFixed(6)}`;
+
+    let centerChild = sphereNode.children.find((c) => c.name.startsWith('center'));
+    if (centerChild) {
+      centerChild.name = centerText;
+    } else {
+      centerChild = new PoserNode(sphereNode, centerText);
+      centerChild.hasChildrenBlock = false;
+      sphereNode.children.push(centerChild);
+    }
+
+    let innerChild = sphereNode.children.find((c) => c.name.startsWith('innerRad'));
+    if (innerChild) {
+      innerChild.name = innerText;
+    } else {
+      innerChild = new PoserNode(sphereNode, innerText);
+      innerChild.hasChildrenBlock = false;
+      sphereNode.children.push(innerChild);
+    }
+
+    let outerChild = sphereNode.children.find((c) => c.name.startsWith('outerRad'));
+    if (outerChild) {
+      outerChild.name = outerText;
+    } else {
+      outerChild = new PoserNode(sphereNode, outerText);
+      outerChild.hasChildrenBlock = false;
+      sphereNode.children.push(outerChild);
+    }
+
+    return this;
+  }
+
+  getSphereFalloff(): { center: Vector3; innerRadius: number; outerRadius: number } | null {
+    const sphereNode = this.children.find(
+      (c) => c.name === 'sphere' || c.name.startsWith('sphere ')
+    );
+    if (!sphereNode) return null;
+
+    const centerChild = sphereNode.children.find((c) => c.name.startsWith('center'));
+    const innerChild = sphereNode.children.find((c) => c.name.startsWith('innerRad'));
+    const outerChild = sphereNode.children.find((c) => c.name.startsWith('outerRad'));
+
+    if (!centerChild || !innerChild || !outerChild) return null;
+
+    const cParts = centerChild.name.split(/\s+/);
+    const center = new Vector3(
+      parseFloat(cParts[1]),
+      parseFloat(cParts[2]),
+      parseFloat(cParts[3])
+    );
+    const innerRadius = parseFloat(innerChild.name.split(/\s+/)[1]);
+    const outerRadius = parseFloat(outerChild.name.split(/\s+/)[1]);
+
+    return { center, innerRadius, outerRadius };
   }
 }
 

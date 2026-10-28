@@ -2,7 +2,8 @@ import { RootNode } from '../model/root-node.js';
 import { ActorNode } from '../model/actor-node.js';
 import { FigureNode } from '../model/figure-node.js';
 import { MaterialNode } from '../model/material-node.js';
-import { Vector3 } from '@atp/geometry';
+import { Vector3 } from 'atp-geometry';
+import { PoserNode } from '../core/poser-node.js';
 import { PoserWriter } from '../core/poser-writer.js';
 
 export interface AddBoneOptions {
@@ -12,6 +13,14 @@ export interface AddBoneOptions {
   endPoint?: Vector3 | [number, number, number];
   orientation?: Vector3 | [number, number, number];
   createDefaultChannels?: boolean;
+  rotateOrder?: string;
+  hasGeom?: boolean | number;
+  geomHandler?: number;
+  sphereFalloff?: {
+    center: Vector3 | [number, number, number];
+    innerRadius: number;
+    outerRadius: number;
+  };
 }
 
 export class Cr2Builder {
@@ -57,6 +66,29 @@ export class Cr2Builder {
       actor.setOrientation(orient);
     }
 
+    if (options.rotateOrder) {
+      actor.setRotateOrder(options.rotateOrder);
+    }
+
+    if (options.hasGeom !== undefined) {
+      actor.setHasGeom(options.hasGeom);
+    }
+
+    if (options.geomHandler !== undefined) {
+      actor.setGeomHandler(options.geomHandler);
+    }
+
+    if (options.sphereFalloff) {
+      const center = Array.isArray(options.sphereFalloff.center)
+        ? Vector3.fromArray(options.sphereFalloff.center)
+        : options.sphereFalloff.center;
+      actor.setSphereFalloff(
+        center,
+        options.sphereFalloff.innerRadius,
+        options.sphereFalloff.outerRadius
+      );
+    }
+
     if (options.createDefaultChannels !== false) {
       actor.createDefaultChannels();
     }
@@ -64,6 +96,7 @@ export class Cr2Builder {
     if (options.parentName) {
       this.figure.addChildNode(options.name, options.parentName);
       this.figure.addWeldNode(options.name, options.parentName);
+      actor.setParent(options.parentName);
     }
 
     return actor;
@@ -128,6 +161,36 @@ export class Cr2Builder {
         grp.parameter(p, true);
       }
     }
+    return this;
+  }
+
+  addMasterDial(
+    actorName: string,
+    dialId: string,
+    displayName: string,
+    min: number = -100,
+    max: number = 100,
+    trackingScale: number = 0.02
+  ): PoserNode {
+    const actor = this.root.getActor(actorName);
+    if (!actor) {
+      throw new Error(`Actor '${actorName}' not found in CR2 document`);
+    }
+    return actor.channels.addMasterDial(dialId, displayName, min, max, trackingScale);
+  }
+
+  addSlaveLink(
+    actorName: string,
+    channelName: 'xrot' | 'yrot' | 'zrot',
+    masterActor: string,
+    masterDialName: string,
+    deltaScale: number
+  ): this {
+    const actor = this.root.getActor(actorName);
+    if (!actor) {
+      throw new Error(`Actor '${actorName}' not found in CR2 document`);
+    }
+    actor.channels.addSlaveLink(channelName, masterActor, masterDialName, deltaScale);
     return this;
   }
 

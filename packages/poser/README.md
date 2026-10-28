@@ -1,4 +1,4 @@
-# @atp/poser
+# atp-poser
 
 > High-performance Poser CR2/PP2/PZ3 AST parser, streaming serializer, character rigging model, and fluent figure assembly engine for Electron and Node.js.
 
@@ -15,13 +15,13 @@
 - [Module Exports](#module-exports)
 - [Poser File Format Specifications](#poser-file-format-specifications)
 - [Core API Reference](#core-api-reference)
-  - [AST Core Engine (@atp/poser/core)](#ast-core-engine-atpposercore)
+  - [AST Core Engine (atp-poser/core)](#ast-core-engine-atpposercore)
     - [PoserNode](#posernode)
     - [NodeList](#nodelist)
     - [PoserWriter](#poserwriter)
     - [PoserReader](#poserreader)
     - [PoserPathResolver](#poserpathresolver)
-  - [Character & Rigging Model (@atp/poser/model)](#character--rigging-model-atpposermodel)
+  - [Character & Rigging Model (atp-poser/model)](#character--rigging-model-atpposermodel)
     - [RootNode](#rootnode)
     - [ActorNode](#actornode)
     - [FigureNode](#figurenode)
@@ -33,7 +33,7 @@
     - [WeightMap](#weightmap)
     - [MaterialNode](#materialnode)
     - [PropNode](#propnode)
-  - [Builder & Pipeline Engine (@atp/poser/builder)](#builder--pipeline-engine-atpposerbuilder)
+  - [Builder & Pipeline Engine (atp-poser/builder)](#builder--pipeline-engine-atpposerbuilder)
     - [Cr2Builder](#cr2builder)
     - [PoserAssetPipeline](#poserassetpipeline)
 - [Step-by-Step Recipes & Examples](#step-by-step-recipes--examples)
@@ -48,13 +48,13 @@
 
 ## Architectural Overview
 
-`@atp/poser` is an industrial-strength Poser character and rigging engine. It provides complete AST parsing, serialization, and model definitions for generating Poser `.cr2` (character rigging), `.pp2` (smart and stationary props), and `.pz3` (scene) files in modern TypeScript.
+`atp-poser` is an industrial-strength Poser character and rigging engine. It provides complete AST parsing, serialization, and model definitions for generating Poser `.cr2` (character rigging), `.pp2` (smart and stationary props), and `.pz3` (scene) files in modern TypeScript.
 
 - **AST Parity**: Directly models Poser's proprietary brace-delimited block structure with recursive nodes (`PoserNode`), supporting property inspection, tree mutation, and path queries (`findPath`).
 - **High-Speed Parsing**: Tokenizes and parses massive 3.3MB CR2 files in **less than 3ms**, allowing template figures and library characters to load instantly in Electron UI threads.
 - **Poser Standard Formatting**: Strictly enforces Poser formatting requirements: exact tab indentation (`\t`), matching braces `{ ... }`, 6-decimal float precision, and CRLF (`\r\n`) line endings for 100% compatibility across Poser 4 through Poser 13+ and DAZ Studio.
 - **Full Rigging Hierarchy**: Complete support for skeleton trees, parent-child links (`addChildNodes`), weld definitions (`weldNodes`), joint constraints, rotation/scale channels, morph target dials, dial UI folders (`groupNode`), and Poser 9+ vertex weight maps.
-- **Unified Asset Pipeline**: Integrates seamlessly with `@atp/geometry` to cross-validate that mesh polygon groups (`g <group>`) match bone actor names (`actor <group>:1`) before streaming paired exports to disk.
+- **Unified Asset Pipeline**: Integrates seamlessly with `atp-geometry` to cross-validate that mesh polygon groups (`g <group>`) match bone actor names (`actor <group>:1`) before streaming paired exports to disk.
 
 ---
 
@@ -62,10 +62,10 @@
 
 ```bash
 # npm
-npm install @atp/poser @atp/geometry
+npm install atp-poser atp-geometry
 
 # yarn
-yarn add @atp/poser @atp/geometry
+yarn add atp-poser atp-geometry
 ```
 
 ---
@@ -74,12 +74,12 @@ yarn add @atp/poser @atp/geometry
 
 ```typescript
 // Root entry point (all modules)
-import { Cr2Builder, PoserAssetPipeline, PoserReader, PoserWriter, RootNode, ActorNode } from '@atp/poser';
+import { Cr2Builder, PoserAssetPipeline, PoserReader, PoserWriter, RootNode, ActorNode } from 'atp-poser';
 
 // Subpath imports
-import { PoserNode, NodeList, PoserWriter, PoserReader, PoserPathResolver } from '@atp/poser/core';
-import { RootNode, ActorNode, FigureNode, ChannelsNode, GroupsNode, WeightMapNode, TargetGeomNode } from '@atp/poser/model';
-import { Cr2Builder, PoserAssetPipeline } from '@atp/poser/builder';
+import { PoserNode, NodeList, PoserWriter, PoserReader, PoserPathResolver } from 'atp-poser/core';
+import { RootNode, ActorNode, FigureNode, ChannelsNode, GroupsNode, WeightMapNode, TargetGeomNode } from 'atp-poser/model';
+import { Cr2Builder, PoserAssetPipeline } from 'atp-poser/builder';
 ```
 
 ---
@@ -129,7 +129,7 @@ Poser files (`.cr2`, `.pp2`, `.pz3`, `.hr2`) use a proprietary brace-delimited A
 }
 ```
 
-### Strict Rules Enforced by `@atp/poser`:
+### Strict Rules Enforced by `atp-poser`:
 1. **CRLF Line Endings**: Every line terminates with `\r\n`.
 2. **Tab Indentation**: Indentation is strictly formed using tab characters (`\t`), exactly matching AST depth.
 3. **Float Formatting**: Real numbers in channels and morph deltas format with 6 decimal places (`0.015000`).
@@ -140,14 +140,14 @@ Poser files (`.cr2`, `.pp2`, `.pz3`, `.hr2`) use a proprietary brace-delimited A
 
 ## Core API Reference
 
-### AST Core Engine (`@atp/poser/core`)
+### AST Core Engine (`atp-poser/core`)
 
 #### PoserNode
 
 Base hierarchical class for every block and property in a Poser document.
 
 ```typescript
-import { PoserNode } from '@atp/poser/core';
+import { PoserNode } from 'atp-poser/core';
 
 const node = new PoserNode(parentNode, 'actor head:1');
 ```
@@ -182,7 +182,7 @@ const node = new PoserNode(parentNode, 'actor head:1');
 Fluent collection wrapper over sets of `PoserNode` instances (port of `ATC::Poser::NodeList`), providing chainable batch queries and mutations:
 
 ```typescript
-import { NodeList } from '@atp/poser/core';
+import { NodeList } from 'atp-poser/core';
 
 const list = new NodeList(root.findChildren('actor'));
 
@@ -213,7 +213,7 @@ list.deleteSubNode('storageOffset');
 Exact Poser syntax streaming serializer.
 
 ```typescript
-import { PoserWriter } from '@atp/poser/core';
+import { PoserWriter } from 'atp-poser/core';
 ```
 
 ##### Methods
@@ -234,7 +234,7 @@ import { PoserWriter } from '@atp/poser/core';
 High-performance tokenizer parsing Poser brace syntax files.
 
 ```typescript
-import { PoserReader } from '@atp/poser/core';
+import { PoserReader } from 'atp-poser/core';
 
 // From string
 const root = PoserReader.parseString(cr2Content);
@@ -250,7 +250,7 @@ const root = await PoserReader.loadFromFile('C:/Poser/Runtime/Character/Figure.c
 Normalizes Poser relative `:Runtime:` paths across Windows, macOS, and POSIX formats:
 
 ```typescript
-import { PoserPathResolver } from '@atp/poser/core';
+import { PoserPathResolver } from 'atp-poser/core';
 
 // Check if path is in a Poser Runtime
 PoserPathResolver.inRuntime('C:\\Poser\\Runtime\\Geometries\\Hair\\Hair.obj'); // true
@@ -266,7 +266,7 @@ PoserPathResolver.toDiskPath(':Runtime:Geometries:Hair:Hair.obj', 'C:/Poser');
 
 ---
 
-### Character & Rigging Model (`@atp/poser/model`)
+### Character & Rigging Model (`atp-poser/model`)
 
 #### RootNode
 
@@ -294,6 +294,16 @@ Represents a single bone or rigging component in the skeleton (e.g. `actor hairR
 - `getEndPoint(): Vector3` — Returns joint endpoint.
 - `setOrientation(v: Vector3): this` — Sets joint rotational orientation.
 - `getOrientation(): Vector3` — Returns joint orientation.
+- `setRotateOrder(order?: string): this` — Sets Euler rotation order (e.g. `'zyx'`).
+- `getRotateOrder(): string | undefined` — Returns Euler rotation order.
+- `setGeomHandler(handlerType?: number, actorName?: string): this` — Sets geometry handler type (e.g. 13) and optional actor name.
+- `getGeomHandler(): { handlerType: number; actorName?: string } | undefined` — Gets geometry handler settings.
+- `setHasGeom(hasGeom: boolean | number): this` — Sets `hasGeom` flag (1 or 0).
+- `getHasGeom(): boolean | undefined` — Returns whether bone has geometry.
+- `setParent(parentActorName: string): this` — Sets parent actor in the actor definition block.
+- `getParent(): string | undefined` — Gets parent actor name.
+- `setSphereFalloff(center: Vector3 | [number, number, number], innerRadius: number, outerRadius: number): this` — Configures joint sphere falloff deformation zone.
+- `getSphereFalloff(): { center: Vector3; innerRadius: number; outerRadius: number } | undefined` — Gets sphere falloff configuration.
 - `setObjPath(objRelativePath: string): this` — Sets external OBJ geometry reference.
 - `createDefaultChannels(): this` — Instantiates standard Poser dials (`scale`, `xScale`, `yScale`, `zScale`, `rotateZ`, `rotateX`, `rotateY`, `translateX`, `translateY`, `translateZ`).
 - `addWeightMap(mapId: string, numVerts?: number): WeightMapNode` — Adds a vertex weight map for this bone.
@@ -314,8 +324,10 @@ Represents the `figure` block defining skeleton relationships:
 
 #### ChannelsNode & JointNode
 
-Manages rotation, translation, and morph dials:
+Manages rotation, translation, morph dials, and ERC master/slave relationships:
 
+- `addMasterDial(dialId: string, displayName: string, min?: number, max?: number, trackingScale?: number): PoserNode` — Adds an ERC master control dial (`valueParm`) with tracking scale and static keyframes.
+- `addSlaveLink(channelName: 'xrot' | 'yrot' | 'zrot', masterActor: string, masterDialName: string, deltaScale: number): this` — Binds a joint rotation channel (e.g. Bend/xrot) to a master dial via `valueOpDeltaAdd`.
 - `addMorph(morphName: string): TargetGeomNode` — Creates or retrieves a morph dial.
 - `getMorphs(): TargetGeomNode[]` — Returns all morph dials on this bone.
 - `addGroup(groupName: string): GroupsNode | null` — Creates a UI dial folder (`groupNode <groupName>`).
@@ -356,8 +368,8 @@ styleGroup.parameter('Length', true);
 Supports Poser 9+ vertex weight-mapped rigging:
 
 ```typescript
-import { WeightMapNode, WeightMap } from '@atp/poser/model';
-import { Vector3 } from '@atp/geometry';
+import { WeightMapNode, WeightMap } from 'atp-poser/model';
+import { Vector3 } from 'atp-geometry';
 
 // 1. Spatial interpolation data structure
 const map = new WeightMap();
@@ -374,14 +386,40 @@ wmNode.syncToNodes(); // writes out 'numbVerts 100' and 'v index weight'
 
 ---
 
-### Builder & Pipeline Engine (`@atp/poser/builder`)
+#### MaterialNode
+
+Represents a surface shader material definition block (`material <name>`), supporting colors, textures, and shader map channels:
+
+- `setColors(kd?: [number, number, number], ka?: [number, number, number], ks?: [number, number, number]): this` — Sets diffuse (`KdColor`), ambient (`KaColor`), and specular (`KsColor`) RGBA colors.
+- `setTextureMap(texturePath: string, uOffset?: number, vOffset?: number): this` — Sets primary diffuse texture map (`textureMap "<path>" u v`).
+- `getTextureMap(): string | undefined` — Retrieves path of active diffuse texture map.
+- `setTransparencyMap(texturePath: string, tMin?: number, tMax?: number, tExpo?: number): this` — Sets transparency texture map with thresholds and exponent (`transparencyMap`, `tMin`, `tMax`, `tExpo`).
+- `getTransparencyMap(): string | undefined` — Retrieves transparency texture map path.
+- `setBumpMap(texturePath: string, bumpStrength?: number): this` — Sets bump/normal map texture with strength (`bumpMap`, `bumpStrength`).
+- `getBumpMap(): string | undefined` — Retrieves bump map path.
+- `setSpecularMap(texturePath: string): this` — Sets specular map texture (`specularMap`).
+- `getSpecularMap(): string | undefined` — Retrieves specular map path.
+- `setNsExponent(ns: number): this` — Sets specular highlight sharpness exponent (`nsExponent`).
+
+```typescript
+const mat = root.addMaterial('Hair_Material');
+mat.setColors([1.0, 1.0, 1.0], [0.0, 0.0, 0.0], [0.35, 0.35, 0.35])
+   .setTextureMap(':Runtime:Textures:Hair:diffuse.png')
+   .setTransparencyMap(':Runtime:Textures:Hair:trans.png', 1, 0, 0.6)
+   .setBumpMap(':Runtime:Textures:Hair:normal.png', 1)
+   .setSpecularMap(':Runtime:Textures:Hair:spec.png');
+```
+
+---
+
+### Builder & Pipeline Engine (`atp-poser/builder`)
 
 #### Cr2Builder
 
 Fluent builder API for constructing figures without manual AST manipulation:
 
 ```typescript
-import { Cr2Builder } from '@atp/poser';
+import { Cr2Builder } from 'atp-poser';
 
 const cr2 = new Cr2Builder('HairFigure')
   .setVersion('4.01')
@@ -406,6 +444,10 @@ cr2.addBone({
 cr2.addDialGroup('hairRoot', 'Styles', ['Wind', 'Length']);
 cr2.addMorphDelta('hairRoot', 'Wind', deltaMap);
 
+// Add ERC master dial and slave rotation link
+cr2.addMasterDial('hairRoot', 'tail_Curl', 'Curl (tail)', -100, 100, 0.02);
+cr2.addSlaveLink('hairTip', 'xrot', 'hairRoot', 'tail_Curl', 0.85);
+
 // Export to file
 await cr2.exportToDisk('C:/Poser/Runtime/Libraries/Character/Hair/MyHair.cr2');
 ```
@@ -417,8 +459,8 @@ await cr2.exportToDisk('C:/Poser/Runtime/Libraries/Character/Hair/MyHair.cr2');
 Automates the simultaneous generation of paired `.obj` geometry and `.cr2` rigging files:
 
 ```typescript
-import { PoserAssetPipeline } from '@atp/poser';
-import { WavefrontMesh } from '@atp/geometry';
+import { PoserAssetPipeline } from 'atp-poser';
+import { WavefrontMesh } from 'atp-geometry';
 
 const result = await PoserAssetPipeline.exportAssetPair(mesh, cr2, {
   runtimeDir: 'C:/Poser/Runtime',
@@ -443,7 +485,7 @@ The pipeline automatically validates that:
 ### 1. Building a Complete 3-Bone Conforming Hair Figure
 
 ```typescript
-import { Cr2Builder } from '@atp/poser';
+import { Cr2Builder } from 'atp-poser';
 
 export function createConformingHairRig(geometryRelativePath: string): Cr2Builder {
   const cr2 = new Cr2Builder('ConformingHair')
@@ -492,8 +534,8 @@ export function createConformingHairRig(geometryRelativePath: string): Cr2Builde
 ### 2. Adding Morph Targets with Sparse Deltas
 
 ```typescript
-import { Vector3 } from '@atp/geometry';
-import { Cr2Builder } from '@atp/poser';
+import { Vector3 } from 'atp-geometry';
+import { Cr2Builder } from 'atp-poser';
 
 export function addWindMorph(cr2: Cr2Builder, actorName: string, vertexCount: number) {
   const windDeltas = new Map<number, Vector3>();
@@ -514,7 +556,7 @@ export function addWindMorph(cr2: Cr2Builder, actorName: string, vertexCount: nu
 ### 3. Organizing Dials into Collapsible UI Folders
 
 ```typescript
-import { Cr2Builder } from '@atp/poser';
+import { Cr2Builder } from 'atp-poser';
 
 export function organizeHairDials(cr2: Cr2Builder) {
   // Group dials into "Hair Styles" folder in Poser UI
@@ -540,7 +582,7 @@ export function organizeHairDials(cr2: Cr2Builder) {
 ### 4. Adding Weight Maps for Smooth Joint Bending
 
 ```typescript
-import { Cr2Builder } from '@atp/poser';
+import { Cr2Builder } from 'atp-poser';
 
 export function applyWeightMaps(cr2: Cr2Builder) {
   // Gradual falloff for smooth bending across hairRoot to hairMid
@@ -562,8 +604,8 @@ export function applyWeightMaps(cr2: Cr2Builder) {
 ### 5. One-Call Paired OBJ + CR2 Export
 
 ```typescript
-import { WavefrontMesh } from '@atp/geometry';
-import { Cr2Builder, PoserAssetPipeline } from '@atp/poser';
+import { WavefrontMesh } from 'atp-geometry';
+import { Cr2Builder, PoserAssetPipeline } from 'atp-poser';
 
 export async function exportHairProduct(runtimeDir: string, figureName: string) {
   // 1. Build geometry (mesh groups: hairRoot, hairMid, hairTip)
@@ -590,7 +632,7 @@ export async function exportHairProduct(runtimeDir: string, figureName: string) 
 
 ## Developer Workflow & Testing
 
-This package is managed inside the `@atp` monorepo.
+This package is managed inside the ATP monorepo.
 
 ```bash
 # Run unit tests
