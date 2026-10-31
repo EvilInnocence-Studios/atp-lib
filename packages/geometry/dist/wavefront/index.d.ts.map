@@ -1,1 +1,0 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/wavefront/index.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,aAAa,EACb,KAAK,UAAU,EACf,KAAK,QAAQ,GACd,MAAM,qBAAqB,CAAC;AAC7B,OAAO,EACL,eAAe,EACf,KAAK,sBAAsB,GAC5B,MAAM,uBAAuB,CAAC;AAC/B,OAAO,EACL,kBAAkB,EAClB,KAAK,oBAAoB,EACzB,KAAK,yBAAyB,GAC/B,MAAM,2BAA2B,CAAC;AACnC,OAAO,EAAE,eAAe,EAAE,MAAM,uBAAuB,CAAC"}

@@ -1,1 +1,0 @@
-{"version":3,"file":"wavefront-reader.d.ts","sourceRoot":"","sources":["../../src/wavefront/wavefront-reader.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,aAAa,EAAc,MAAM,qBAAqB,CAAC;AAEhE,qBAAa,eAAe;IAC1B;;OAEG;IACH,MAAM,CAAC,WAAW,CAAC,OAAO,EAAE,MAAM,EAAE,YAAY,GAAE,OAAe,GAAG,aAAa;IAwHjF;;OAEG;WACU,YAAY,CACvB,QAAQ,EAAE,MAAM,EAChB,YAAY,GAAE,OAAe,GAC5B,OAAO,CAAC,aAAa,CAAC;CAI1B"}
