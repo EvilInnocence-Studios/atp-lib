@@ -1,0 +1,1264 @@
+{
+	version
+	{
+		number 11
+	}
+	figureResFile :Runtime:Geometries:PoserHairMaker:my_hairstyle.obj
+	actor BODY:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name xrot
+				initValue 0
+				hidden 0
+				forceLimits 0
+				min -180
+				max 180
+				trackingScale 1
+				keys
+			}
+			rotateY yrot
+			{
+				name yrot
+				initValue 0
+				hidden 0
+				forceLimits 0
+				min -180
+				max 180
+				trackingScale 1
+				keys
+			}
+			rotateZ zrot
+			{
+				name zrot
+				initValue 0
+				hidden 0
+				forceLimits 0
+				min -180
+				max 180
+				trackingScale 1
+				keys
+			}
+			translateX xtran
+			{
+				name xtran
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -10000
+				max 10000
+				trackingScale 1
+				keys
+			}
+			translateY ytran
+			{
+				name ytran
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -10000
+				max 10000
+				trackingScale 1
+				keys
+			}
+			translateZ ztran
+			{
+				name ztran
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -10000
+				max 10000
+				trackingScale 1
+				keys
+			}
+		}
+		endPoint 0.000000 1.550000 0.000000
+		origin 0.000000 0.000000 0.000000
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 0
+		parent NONE:1
+	}
+	actor head:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			valueParm Ponytail 1_Curl
+			{
+				name Curl (Ponytail 1)
+				initValue 0
+				hidden 0
+				forceLimits 0
+				min -100
+				max 100
+				trackingScale 0.02
+				keys
+				{
+					static 0
+					k 0 0
+				}
+				interpStyleLocked 0
+			}
+			valueParm Ponytail 1_Swing
+			{
+				name Swing (Ponytail 1)
+				initValue 0
+				hidden 0
+				forceLimits 0
+				min -100
+				max 100
+				trackingScale 0.02
+				keys
+				{
+					static 0
+					k 0 0
+				}
+				interpStyleLocked 0
+			}
+			valueParm Ponytail 1_Twist
+			{
+				name Twist (Ponytail 1)
+				initValue 0
+				hidden 0
+				forceLimits 0
+				min -100
+				max 100
+				trackingScale 0.02
+				keys
+				{
+					static 0
+					k 0 0
+				}
+				interpStyleLocked 0
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name Bend
+				initValue 0
+				hidden 0
+				forceLimits 0
+				min -90
+				max 90
+				trackingScale 1
+				keys
+			}
+			rotateY yrot
+			{
+				name Twist
+				initValue 0
+				hidden 0
+				forceLimits 0
+				min -90
+				max 90
+				trackingScale 1
+				keys
+			}
+			rotateZ zrot
+			{
+				name Side-Side
+				initValue 0
+				hidden 0
+				forceLimits 0
+				min -90
+				max 90
+				trackingScale 1
+				keys
+			}
+		}
+		endPoint 0.000000 1.750000 0.000000
+		origin 0.000000 1.550000 0.000000
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 0
+		parent BODY:1
+	}
+	actor Ponytail 1_1:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name Bend
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -80
+				max 45
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Curl
+				deltaAddDelta 0.7750
+			}
+			rotateY yrot
+			{
+				name Twist
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -90
+				max 90
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Twist
+				deltaAddDelta 0.7750
+			}
+			rotateZ zrot
+			{
+				name Side-Side
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -60
+				max 60
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Swing
+				deltaAddDelta 0.7750
+			}
+		}
+		endPoint 0.000000 0.711773 -0.056624
+		origin 0.000000 0.712000 -0.044000
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 1
+		geomHandlerGeom 13 Ponytail 1_1
+		sphere
+		{
+			center 0.000000 0.712000 -0.044000
+			innerRad 0.005000
+			outerRad 0.015000
+		}
+		parent head:1
+	}
+	actor Ponytail 1_2:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name Bend
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -80
+				max 45
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Curl
+				deltaAddDelta 0.8500
+			}
+			rotateY yrot
+			{
+				name Twist
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -90
+				max 90
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Twist
+				deltaAddDelta 0.8500
+			}
+			rotateZ zrot
+			{
+				name Side-Side
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -60
+				max 60
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Swing
+				deltaAddDelta 0.8500
+			}
+		}
+		endPoint 0.000000 0.701861 -0.067974
+		origin 0.000000 0.711773 -0.056624
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 1
+		geomHandlerGeom 13 Ponytail 1_2
+		sphere
+		{
+			center 0.000000 0.711773 -0.056624
+			innerRad 0.009131
+			outerRad 0.015379
+		}
+		parent Ponytail 1_1:1
+	}
+	actor Ponytail 1_3:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name Bend
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -80
+				max 45
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Curl
+				deltaAddDelta 0.9250
+			}
+			rotateY yrot
+			{
+				name Twist
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -90
+				max 90
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Twist
+				deltaAddDelta 0.9250
+			}
+			rotateZ zrot
+			{
+				name Side-Side
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -60
+				max 60
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Swing
+				deltaAddDelta 0.9250
+			}
+		}
+		endPoint 0.000000 0.673728 -0.076230
+		origin 0.000000 0.701861 -0.067974
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 1
+		geomHandlerGeom 13 Ponytail 1_3
+		sphere
+		{
+			center 0.000000 0.701861 -0.067974
+			innerRad 0.011890
+			outerRad 0.020026
+		}
+		parent Ponytail 1_2:1
+	}
+	actor Ponytail 1_4:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name Bend
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -80
+				max 45
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Curl
+				deltaAddDelta 1.0000
+			}
+			rotateY yrot
+			{
+				name Twist
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -90
+				max 90
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Twist
+				deltaAddDelta 1.0000
+			}
+			rotateZ zrot
+			{
+				name Side-Side
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -60
+				max 60
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Swing
+				deltaAddDelta 1.0000
+			}
+		}
+		endPoint 0.000000 0.634948 -0.081971
+		origin 0.000000 0.673728 -0.076230
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 1
+		geomHandlerGeom 13 Ponytail 1_4
+		sphere
+		{
+			center 0.000000 0.673728 -0.076230
+			innerRad 0.010419
+			outerRad 0.017548
+		}
+		parent Ponytail 1_3:1
+	}
+	actor Ponytail 1_5:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name Bend
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -80
+				max 45
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Curl
+				deltaAddDelta 1.0750
+			}
+			rotateY yrot
+			{
+				name Twist
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -90
+				max 90
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Twist
+				deltaAddDelta 1.0750
+			}
+			rotateZ zrot
+			{
+				name Side-Side
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -60
+				max 60
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Swing
+				deltaAddDelta 1.0750
+			}
+		}
+		endPoint 0.000000 0.589532 -0.084739
+		origin 0.000000 0.634948 -0.081971
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 1
+		geomHandlerGeom 13 Ponytail 1_5
+		sphere
+		{
+			center 0.000000 0.634948 -0.081971
+			innerRad 0.008765
+			outerRad 0.015000
+		}
+		parent Ponytail 1_4:1
+	}
+	actor Ponytail 1_6:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name Bend
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -80
+				max 45
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Curl
+				deltaAddDelta 1.1500
+			}
+			rotateY yrot
+			{
+				name Twist
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -90
+				max 90
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Twist
+				deltaAddDelta 1.1500
+			}
+			rotateZ zrot
+			{
+				name Side-Side
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -60
+				max 60
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Swing
+				deltaAddDelta 1.1500
+			}
+		}
+		endPoint 0.000000 0.539996 -0.085998
+		origin 0.000000 0.589532 -0.084739
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 1
+		geomHandlerGeom 13 Ponytail 1_6
+		sphere
+		{
+			center 0.000000 0.589532 -0.084739
+			innerRad 0.006803
+			outerRad 0.015000
+		}
+		parent Ponytail 1_5:1
+	}
+	actor Ponytail 1_7:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name Bend
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -80
+				max 45
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Curl
+				deltaAddDelta 1.2250
+			}
+			rotateY yrot
+			{
+				name Twist
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -90
+				max 90
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Twist
+				deltaAddDelta 1.2250
+			}
+			rotateZ zrot
+			{
+				name Side-Side
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -60
+				max 60
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Swing
+				deltaAddDelta 1.2250
+			}
+		}
+		endPoint 0.000000 0.490311 -0.087124
+		origin 0.000000 0.539996 -0.085998
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 1
+		geomHandlerGeom 13 Ponytail 1_7
+		sphere
+		{
+			center 0.000000 0.539996 -0.085998
+			innerRad 0.005271
+			outerRad 0.015000
+		}
+		parent Ponytail 1_6:1
+	}
+	actor Ponytail 1_8:1
+	{
+		storageOffset 0 0 0
+		geomCustom
+		{
+		}
+		channels
+		{
+			groups
+			{
+			}
+			scale scale
+			{
+				name scale
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleX
+			{
+				name scaleX
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleY
+			{
+				name scaleY
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			scale scaleZ
+			{
+				name scaleZ
+				initValue 1
+				hidden 0
+				forceLimits 1
+				min 0.001
+				max 1000
+				trackingScale 1
+				keys
+			}
+			rotateX xrot
+			{
+				name Bend
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -80
+				max 45
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Curl
+				deltaAddDelta 1.3000
+			}
+			rotateY yrot
+			{
+				name Twist
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -90
+				max 90
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Twist
+				deltaAddDelta 1.3000
+			}
+			rotateZ zrot
+			{
+				name Side-Side
+				initValue 0
+				hidden 0
+				forceLimits 1
+				min -60
+				max 60
+				trackingScale 1
+				keys
+				valueOpDeltaAdd
+					_SELF_
+					head:1
+					Ponytail 1_Swing
+				deltaAddDelta 1.3000
+			}
+		}
+		endPoint 0.000000 0.440000 -0.088000
+		origin 0.000000 0.490311 -0.087124
+		orientation 0.000000 0.000000 0.000000
+		rotateOrder zyx
+		hasGeom 1
+		geomHandlerGeom 13 Ponytail 1_8
+		sphere
+		{
+			center 0.000000 0.490311 -0.087124
+			innerRad 0.005000
+			outerRad 0.015000
+		}
+		parent Ponytail 1_7:1
+	}
+	figure
+	{
+		name my_hairstyle
+		root BODY:1
+		runLoop 0
+		BODY:1 addChild head:1
+		head:1 addChild Ponytail 1_1:1
+		Ponytail 1_1:1 addChild Ponytail 1_2:1
+		Ponytail 1_2:1 addChild Ponytail 1_3:1
+		Ponytail 1_3:1 addChild Ponytail 1_4:1
+		Ponytail 1_4:1 addChild Ponytail 1_5:1
+		Ponytail 1_5:1 addChild Ponytail 1_6:1
+		Ponytail 1_6:1 addChild Ponytail 1_7:1
+		Ponytail 1_7:1 addChild Ponytail 1_8:1
+		figureResFile :Runtime:Geometries:PoserHairMaker:my_hairstyle.obj
+	}
+	material Default_Hair_Material
+	{
+		KdColor 1.000000 1.000000 1.000000 1
+		KaColor 0.000000 0.000000 0.000000 1
+		KsColor 0.350000 0.350000 0.350000 1
+		TextureColor 1 1 1 1
+		nsExponent 45
+		tMin 1
+		tMax 0
+		tExpo 0.6
+		bumpStrength 1
+		ksIgnoreTexture 0
+		reflectBgColor 1 1 1 1
+		reflectThruLights 1
+		reflectStrength 1
+		textureMap ":Runtime:Textures:PoserHairMaker:my_hairstyle_Default_Hair_Material_diffuse.png" 0 0
+		transparencyMap ":Runtime:Textures:PoserHairMaker:my_hairstyle_Default_Hair_Material_trans.png" 0 0
+		bumpMap ":Runtime:Textures:PoserHairMaker:my_hairstyle_Default_Hair_Material_normal.png" 0 0
+		specularMap ":Runtime:Textures:PoserHairMaker:my_hairstyle_Default_Hair_Material_spec.png" 0 0
+	}
+	doc
+	{
+		addTree
+	}
+}

@@ -82,7 +82,7 @@ describe('Poser Models & Rigging Components Coverage', () => {
       const output = PoserWriter.writeToString(mat);
       expect(output).toContain('material HairMat');
       expect(output).toContain('KdColor 0.8000 0.5000 0.2000 1.0000');
-      expect(output).toContain('textureMap ":Runtime:Textures:Hair.jpg" 0 0');
+      expect(output).toContain('textureMap ":Runtime:Textures:Hair.jpg"\r\n\t\t0 0');
     });
 
     it('should support full hair shaders with setColors, transparency, bump, specular, and nsExponent', () => {
@@ -104,15 +104,22 @@ describe('Poser Models & Rigging Components Coverage', () => {
       expect(output).toContain('KdColor 1.000000 1.000000 1.000000 1\r\n');
       expect(output).toContain('KaColor 0.000000 0.000000 0.000000 1\r\n');
       expect(output).toContain('KsColor 0.350000 0.350000 0.350000 1\r\n');
-      expect(output).toContain('nsExponent 45\r\n');
+      expect(output).toContain('NsExponent 45\r\n');
       expect(output).toContain('tMin 1\r\n');
       expect(output).toContain('tMax 0\r\n');
       expect(output).toContain('tExpo 0.6\r\n');
       expect(output).toContain('bumpStrength 1\r\n');
-      expect(output).toContain('textureMap ":Runtime:Textures:PoserHairMaker:MyHair_diffuse.png" 0 0\r\n');
-      expect(output).toContain('transparencyMap ":Runtime:Textures:PoserHairMaker:MyHair_trans.png" 0 0\r\n');
-      expect(output).toContain('bumpMap ":Runtime:Textures:PoserHairMaker:MyHair_normal.png" 0 0\r\n');
-      expect(output).toContain('specularMap ":Runtime:Textures:PoserHairMaker:MyHair_spec.png" 0 0\r\n');
+      expect(output).toContain(
+        'textureMap ":Runtime:Textures:PoserHairMaker:MyHair_diffuse.png"\r\n\t\t0 0\r\n'
+      );
+      expect(output).toContain(
+        'transparencyMap ":Runtime:Textures:PoserHairMaker:MyHair_trans.png"\r\n\t\t0 0\r\n'
+      );
+      expect(output).toContain(
+        'bumpMap ":Runtime:Textures:PoserHairMaker:MyHair_normal.png"\r\n\t\t0 0\r\n'
+      );
+      expect(output).toContain('shaderTree\r\n');
+      expect(output).toContain('file ":Runtime:Textures:PoserHairMaker:MyHair_spec.png"\r\n');
     });
 
     it('should test MaterialNode updating existing lines, blank node getters, and bare textureMap', () => {
@@ -273,14 +280,12 @@ describe('Poser Models & Rigging Components Coverage', () => {
 
       const output = PoserWriter.writeToString(actor);
       expect(output).toContain('actor tail_1:1\r\n');
-      expect(output).toContain('geomHandlerGeom 13 tail_1\r\n');
-      expect(output).toContain('hasGeom 1\r\n');
+      expect(output).toContain('name tail_1\r\n');
       expect(output).toContain('parent head:1\r\n');
-      expect(output).toContain('rotateOrder zyx\r\n');
-      expect(output).toContain('sphere\r\n');
-      expect(output).toContain('center 0.000000 1.550000 0.000000\r\n');
-      expect(output).toContain('innerRad 0.020000\r\n');
-      expect(output).toContain('outerRad 0.040000\r\n');
+      expect(output).toContain('sphereMatsRaw\r\n');
+      expect(output).toContain('0.020000 0 0 0\r\n');
+      expect(output).toContain('0.040000 0 0 0\r\n');
+      expect(output).toContain('0.000000 1.550000 0.000000 1\r\n');
     });
 
     it('should test updating existing rigging lines and edge case getters on ActorNode', () => {
@@ -404,10 +409,10 @@ describe('Poser Models & Rigging Components Coverage', () => {
       expect(output).toContain('interpStyleLocked 0\r\n');
 
       expect(output).toContain('valueOpDeltaAdd\r\n');
-      expect(output).toContain('\t\t\t_SELF_\r\n');
+      expect(output).toContain('\t\t\tFigure\r\n');
       expect(output).toContain('\t\t\thead:1\r\n');
       expect(output).toContain('\t\t\ttail_Curl\r\n');
-      expect(output).toContain('\t\tdeltaAddDelta 0.8500\r\n');
+      expect(output).toContain('\t\tdeltaAddDelta 0.850000\r\n');
     });
 
     it('should query group names and parameter names on GroupsNode', () => {

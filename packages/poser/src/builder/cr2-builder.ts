@@ -5,6 +5,7 @@ import { MaterialNode } from '../model/material-node.js';
 import { Vector3 } from 'atp-geometry';
 import { PoserNode } from '../core/poser-node.js';
 import { PoserWriter } from '../core/poser-writer.js';
+import { validateCr2, Cr2ValidationResult } from './cr2-validator.js';
 
 export interface AddBoneOptions {
   name: string;
@@ -78,6 +79,19 @@ export class Cr2Builder {
       actor.setGeomHandler(options.geomHandler);
     }
 
+    if (options.parentName) {
+      this.root.linkBoneHierarchy(options.name, options.parentName);
+    } else if (options.name !== 'BODY') {
+      this.root.linkBoneHierarchy(options.name, 'BODY');
+    }
+
+    if (options.createDefaultChannels === false) {
+      actor.channels.children = [];
+      actor.channels.groupsNode = null;
+    } else {
+      actor.createDefaultChannels();
+    }
+
     if (options.sphereFalloff) {
       const center = Array.isArray(options.sphereFalloff.center)
         ? Vector3.fromArray(options.sphereFalloff.center)
@@ -87,16 +101,6 @@ export class Cr2Builder {
         options.sphereFalloff.innerRadius,
         options.sphereFalloff.outerRadius
       );
-    }
-
-    if (options.createDefaultChannels !== false) {
-      actor.createDefaultChannels();
-    }
-
-    if (options.parentName) {
-      this.figure.addChildNode(options.name, options.parentName);
-      this.figure.addWeldNode(options.name, options.parentName);
-      actor.setParent(options.parentName);
     }
 
     return actor;
@@ -194,6 +198,13 @@ export class Cr2Builder {
     return this;
   }
 
+  /**
+   * Validates the current in-memory CR2 document against all Poser CR2 invariants.
+   */
+  validate(): Cr2ValidationResult {
+    return validateCr2(this.root);
+  }
+
   toString(): string {
     return PoserWriter.writeToString(this.root);
   }
@@ -202,4 +213,3 @@ export class Cr2Builder {
     await PoserWriter.exportToFile(this.root, outputPath);
   }
 }
-

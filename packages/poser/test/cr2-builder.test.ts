@@ -7,6 +7,7 @@ import {
   PoserAssetPipeline,
   PoserReader,
   MaterialNode,
+  validateCr2,
 } from '../src/index.js';
 
 describe('Cr2Builder & Poser Asset Pipeline', () => {
@@ -45,15 +46,22 @@ describe('Cr2Builder & Poser Asset Pipeline', () => {
 
     // Verify key Poser blocks in output
     expect(cr2Text).toContain('version\r\n\t{\r\n\t\tnumber 4.01');
+    expect(cr2Text).toContain('figureResFile ":Runtime:Geometries:Hair:TestHair.obj"');
     expect(cr2Text).toContain('actor hairRoot:1');
-    expect(cr2Text).toContain('objFileGeom 0 0 :Runtime:Geometries:Hair:TestHair.obj');
+    expect(cr2Text).toContain('geomHandlerGeom 13 hairRoot');
     expect(cr2Text).toContain('actor hairTip:1');
     expect(cr2Text).toContain('targetGeom BreezeLeft');
     expect(cr2Text).toContain('d 12 0.015000 -0.005000 0.030000');
     expect(cr2Text).toContain('figure\r\n\t{\r\n\t\tname TestHairFigure');
-    expect(cr2Text).toContain('addChildNodes hairTip:1 hairRoot:1');
-    expect(cr2Text).toContain('weldNodes hairTip:1 hairRoot:1');
+    expect(cr2Text).toContain('addChild hairTip:1\r\n\t\thairRoot:1');
+    expect(cr2Text).toContain('weld hairTip:1\r\n\t\thairRoot:1');
     expect(cr2Text).toContain('material HairStrands');
+
+    // Verify generated CR2 passes full validation with 0 errors and 0 warnings
+    const validation = validateCr2(cr2Text);
+    expect(validation.valid).toBe(true);
+    expect(validation.errors).toEqual([]);
+    expect(builder.validate().valid).toBe(true);
   });
 
   it('should export paired Wavefront OBJ and CR2 files via PoserAssetPipeline', async () => {
@@ -97,11 +105,13 @@ describe('Cr2Builder & Poser Asset Pipeline', () => {
     expect(objContent).toContain('usemtl HairMat');
     expect(cr2Content).toContain('actor hairRoot:1');
     expect(cr2Content).toContain(result.objRelativePoserPath);
+    expect(validateCr2(cr2Content).valid).toBe(true);
 
     // Round-trip parse the generated CR2
     const parsedNode = await PoserReader.loadFromFile(result.cr2AbsolutePath);
     expect(parsedNode.findChild('figure')).not.toBeNull();
     expect(parsedNode.findChild('actor hairRoot:1')).not.toBeNull();
+    expect(validateCr2(parsedNode).valid).toBe(true);
 
     // Clean up temporary files
     await fs.rm(tmpDir, { recursive: true, force: true });
@@ -110,9 +120,9 @@ describe('Cr2Builder & Poser Asset Pipeline', () => {
   it('should test Cr2Builder error and material color branches', () => {
     const builder = new Cr2Builder('Test');
 
-    // addMaterial with diffuse color
+    // addMaterial with diffuse color (placed inside figure block)
     builder.addMaterial('Cloth', [0.1, 0.2, 0.3]);
-    const mat = builder.root.children.find((c) => c.name === 'material Cloth') as MaterialNode;
+    const mat = builder.figure.getMaterial('Cloth') as MaterialNode;
     expect(mat).not.toBeUndefined();
     expect(mat.getDiffuseColor()?.slice(0, 3)).toEqual([0.1, 0.2, 0.3]);
 
@@ -157,6 +167,7 @@ describe('Cr2Builder & Poser Asset Pipeline', () => {
       endPoint: [3, 4, 5],
     });
     expect(b.root.getActor('boneArray')?.getOrientation().toArray()).toEqual([10, 20, 30]);
+    expect(b.validate().valid).toBe(true);
   });
 
   it('should add weightmap using Map instance in Cr2Builder', () => {
@@ -171,6 +182,7 @@ describe('Cr2Builder & Poser Asset Pipeline', () => {
     const wm = builder.root.getActor('bone1')?.getWeightMap('bone1_zrot');
     expect(wm?.getWeight(0)).toBe(1.0);
     expect(wm?.getWeight(5)).toBe(0.5);
+    expect(builder.validate().valid).toBe(true);
   });
 
   it('should support full rigging options in addBone and ERC methods in Cr2Builder', () => {
@@ -182,6 +194,7 @@ describe('Cr2Builder & Poser Asset Pipeline', () => {
       origin: [0, 1.7, 0],
       endPoint: [0, 1.8, 0],
     });
+    expect(head.actorName).toBe('head');
 
     // Bone with rotateOrder, hasGeom, geomHandler, sphereFalloff array, parentName
     const tail1 = builder.addBone({
@@ -228,14 +241,17 @@ describe('Cr2Builder & Poser Asset Pipeline', () => {
 
     const cr2Text = builder.toString();
     expect(cr2Text).toContain('geomHandlerGeom 13 tail_1\r\n');
-    expect(cr2Text).toContain('hasGeom 1\r\n');
     expect(cr2Text).toContain('parent head:1\r\n');
-    expect(cr2Text).toContain('rotateOrder zyx\r\n');
-    expect(cr2Text).toContain('sphere\r\n');
-    expect(cr2Text).toContain('innerRad 0.020000\r\n');
+    expect(cr2Text).toContain('sphereMatsRaw\r\n');
+    expect(cr2Text).toContain('0.020000 0 0 0\r\n');
     expect(cr2Text).toContain('valueParm tail_Curl\r\n');
     expect(cr2Text).toContain('valueOpDeltaAdd\r\n');
-    expect(cr2Text).toContain('deltaAddDelta 0.8500\r\n');
+    expect(cr2Text).toContain('deltaAddDelta 0.850000\r\n');
+
+    const validation = validateCr2(cr2Text);
+    expect(validation.valid).toBe(true);
+    expect(validation.errors).toEqual([]);
+    expect(validation.warnings).toEqual([]);
 
     // Error handling for missing actors
     expect(() =>

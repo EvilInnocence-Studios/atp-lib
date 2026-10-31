@@ -2,47 +2,48 @@ import { PoserNode } from '../core/poser-node.js';
 import { Vector3 } from 'atp-geometry';
 
 export class TargetGeomNode extends PoserNode {
+  public keysNode: PoserNode;
   private deltasNode: PoserNode;
   private indexesNode: PoserNode;
   private numbDeltasNode: PoserNode;
   public deltas: Map<number, Vector3> = new Map();
 
-  constructor(parent: PoserNode | null = null, morphName: string = 'Morph') {
+  constructor(parent: PoserNode | null = null, public morphName: string = 'Morph') {
     super(parent, `targetGeom ${morphName}`);
     this.hasChildrenBlock = true;
 
     // Standard Poser morph dial attributes
-    const nameNode = new PoserNode(this, `name ${morphName}`);
-    nameNode.hasChildrenBlock = false;
-    this.children.push(nameNode);
+    this.addPropertyNode(`name ${morphName}`);
+    this.addPropertyNode('initValue 0');
+    this.addPropertyNode('hidden 0');
+    this.addPropertyNode('forceLimits 1');
+    this.addPropertyNode('min -10000');
+    this.addPropertyNode('max 10000');
+    this.addPropertyNode('trackingScale 0.01');
 
-    const initNode = new PoserNode(this, `initValue 0`);
-    initNode.hasChildrenBlock = false;
-    this.children.push(initNode);
+    this.keysNode = new PoserNode(this, 'keys');
+    this.keysNode.hasChildrenBlock = true;
 
-    const minNode = new PoserNode(this, `min -10`);
-    minNode.hasChildrenBlock = false;
-    this.children.push(minNode);
+    const staticNode = new PoserNode(this.keysNode, 'static  0');
+    staticNode.hasChildrenBlock = false;
+    this.keysNode.children.push(staticNode);
 
-    const maxNode = new PoserNode(this, `max 10`);
-    maxNode.hasChildrenBlock = false;
-    this.children.push(maxNode);
+    const kNode = new PoserNode(this.keysNode, 'k  0  0');
+    kNode.hasChildrenBlock = false;
+    this.keysNode.children.push(kNode);
 
-    const trackingNode = new PoserNode(this, `trackingScale 0.001`);
-    trackingNode.hasChildrenBlock = false;
-    this.children.push(trackingNode);
+    this.children.push(this.keysNode);
 
-    this.indexesNode = new PoserNode(this, 'indexes 0');
-    this.indexesNode.hasChildrenBlock = false;
-    this.children.push(this.indexesNode);
+    this.addPropertyNode('interpStyleLocked 0');
 
-    this.numbDeltasNode = new PoserNode(this, 'numbDeltas 0');
-    this.numbDeltasNode.hasChildrenBlock = false;
-    this.children.push(this.numbDeltasNode);
+    this.indexesNode = this.addPropertyNode('indexes 0');
+    this.numbDeltasNode = this.addPropertyNode('numbDeltas 0');
 
     this.deltasNode = new PoserNode(this, 'deltas');
     this.deltasNode.hasChildrenBlock = true;
     this.children.push(this.deltasNode);
+
+    this.addPropertyNode('blendType 0');
   }
 
   addDelta(vertexIndex: number, dx: number, dy: number, dz: number): this {
@@ -56,17 +57,39 @@ export class TargetGeomNode extends PoserNode {
 
     const count = this.deltas.size;
     this.indexesNode.name = `indexes ${count}`;
-    this.numbDeltasNode.name = `numbDeltas ${count}`;
+    if (this.numbDeltasNode.name === 'numbDeltas 0' || count > this.getNumbDeltas()) {
+      this.numbDeltasNode.name = `numbDeltas ${count}`;
+    }
 
     return this;
   }
 
-  setDeltas(deltas: Map<number, Vector3>): this {
+  setNumbDeltas(totalVertices: number): this {
+    this.numbDeltasNode.name = `numbDeltas ${totalVertices}`;
+    return this;
+  }
+
+  getNumbDeltas(): number {
+    const parts = this.numbDeltasNode.name.split(/\s+/);
+    return parseInt(parts[1], 10) || 0;
+  }
+
+  setDeltas(deltas: Map<number, Vector3>, totalVertices?: number): this {
     this.deltasNode.children = [];
     this.deltas.clear();
     for (const [idx, v] of deltas.entries()) {
       this.addDelta(idx, v.x, v.y, v.z);
     }
+    if (totalVertices !== undefined) {
+      this.setNumbDeltas(totalVertices);
+    }
     return this;
+  }
+
+  private addPropertyNode(text: string): PoserNode {
+    const node = new PoserNode(this, text);
+    node.hasChildrenBlock = false;
+    this.children.push(node);
+    return node;
   }
 }
