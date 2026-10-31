@@ -1,1 +1,4 @@
 node_modules
+release
+packages/poser/dist
+packages/geometry/dist
