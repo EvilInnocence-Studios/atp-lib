@@ -16,6 +16,8 @@
     "test:coverage:poser": "yarn workspace atp-poser test:coverage",
     "test:coverage": "yarn test:coverage:geometry && yarn test:coverage:poser",
     "deploy": "node scripts/build-and-deploy.mjs --clean --test --build --pack",
+    "deploy:geometry": "node scripts/build-and-deploy.mjs --package geometry --clean --test --build --pack",
+    "deploy:poser": "node scripts/build-and-deploy.mjs --package poser --clean --test --build --pack",
     "deploy:pack": "node scripts/build-and-deploy.mjs --clean --test --build --pack",
     "deploy:link": "node scripts/build-and-deploy.mjs --clean --test --build --link",
     "deploy:publish": "node scripts/build-and-deploy.mjs --clean --test --build --publish"

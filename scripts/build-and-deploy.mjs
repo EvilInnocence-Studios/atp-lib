@@ -7,16 +7,17 @@
  *   node scripts/build-and-deploy.mjs [options]
  *
  * Options:
- *   --clean            Remove previous build artifacts and dist/ directories
- *   --test             Run Vitest test suites across all packages
- *   --build            Build TypeScript project references (default: true)
- *   --pack             Create npm tarball packages (.tgz) in the release/ directory
- *   --publish          Publish packages to npm registry (in dependency order)
- *   --dry-run          Perform a dry-run of publish/pack without publishing
- *   --link             Register yarn/npm links globally for local development
- *   --copy-to <path>   Copy built dist/ and package.json to a consumer project
- *   --tag <tag>        npm publish tag (default: latest)
- *   --help, -h         Show this help message
+ *   --package, -p <pkg> Only build/deploy a single package (e.g. "poser", "atp-poser", "geometry", "atp-geometry")
+ *   --clean             Remove previous build artifacts and dist/ directories
+ *   --test              Run Vitest test suites across target package(s)
+ *   --build             Build TypeScript project references (default: true)
+ *   --pack              Create npm tarball packages (.tgz) in the release/ directory
+ *   --publish           Publish packages to npm registry (in dependency order)
+ *   --dry-run           Perform a dry-run of publish/pack without publishing
+ *   --link              Register yarn/npm links globally for local development
+ *   --copy-to <path>    Copy built dist/ and package.json to a consumer project
+ *   --tag <tag>         npm publish tag (default: latest)
+ *   --help, -h          Show this help message
  */
 
 import * as fs from 'node:fs';
@@ -29,7 +30,7 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 // Ordered by dependency: geometry must be built/deployed before poser
-const packages = [
+const allPackages = [
   {
     name: 'atp-geometry',
     folder: 'geometry',
@@ -55,7 +56,20 @@ const flags = {
   help: args.includes('--help') || args.includes('-h'),
   copyTo: '',
   tag: 'latest',
+  package: '',
 };
+
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i];
+  if ((arg === '--package' || arg === '-p') && args[i + 1]) {
+    flags.package = args[i + 1];
+    i++;
+  } else if (arg.startsWith('--package=')) {
+    flags.package = arg.slice('--package='.length);
+  } else if (arg.startsWith('-p=')) {
+    flags.package = arg.slice('-p='.length);
+  }
+}
 
 const copyToIdx = args.indexOf('--copy-to');
 if (copyToIdx !== -1 && args[copyToIdx + 1]) {
@@ -126,18 +140,37 @@ Usage:
   node scripts/build-and-deploy.mjs [options]
 
 Options:
-  --clean            Clean dist/ directories in all packages
-  --test             Run unit tests across all packages before building
-  --build            Compile TypeScript packages (default)
-  --pack             Create tarball packages (.tgz) in release/
-  --publish          Publish packages to npm registry (respects dependency order)
-  --dry-run          Simulate publish or pack without modifying registry
-  --link             Register local yarn/npm links globally
-  --copy-to <path>   Deploy built packages directly to a target project's node_modules
-  --tag <tag>        npm tag (default: latest)
-  --help, -h         Show this message
+  --package, -p <pkg> Only build/deploy a single package (e.g. "poser", "atp-poser", "geometry", "atp-geometry")
+  --clean             Clean dist/ directories in target package(s)
+  --test              Run unit tests across target package(s) before building
+  --build             Compile TypeScript package(s) (default)
+  --pack              Create tarball packages (.tgz) in release/
+  --publish           Publish package(s) to npm registry (respects dependency order)
+  --dry-run           Simulate publish or pack without modifying registry
+  --link              Register local yarn/npm links globally
+  --copy-to <path>    Deploy built package(s) directly to a target project's node_modules
+  --tag <tag>         npm tag (default: latest)
+  --help, -h          Show this message
 `);
   process.exit(0);
+}
+
+// Filter packages if --package / -p was specified
+let packages = allPackages;
+if (flags.package) {
+  const target = flags.package.trim().toLowerCase();
+  packages = allPackages.filter(
+    (pkg) =>
+      pkg.name.toLowerCase() === target ||
+      pkg.folder.toLowerCase() === target
+  );
+
+  if (packages.length === 0) {
+    const validList = allPackages.map((p) => `${p.name} (${p.folder})`).join(', ');
+    log(`Unknown package "${flags.package}". Available packages: ${validList}`, colors.red);
+    process.exit(1);
+  }
+  log(`Targeting single package: ${packages[0].name}`, colors.cyan);
 }
 
 const startTime = Date.now();
@@ -154,8 +187,19 @@ if (flags.clean) {
   }
   const releaseDir = path.join(rootDir, 'release');
   if (fs.existsSync(releaseDir)) {
-    log(`Cleaning release/ directory...`, colors.yellow);
-    fs.rmSync(releaseDir, { recursive: true, force: true });
+    if (!flags.package) {
+      log(`Cleaning release/ directory...`, colors.yellow);
+      fs.rmSync(releaseDir, { recursive: true, force: true });
+    } else {
+      // Only remove tarballs belonging to the selected package
+      const pkgPrefix = `${packages[0].name}-`;
+      for (const file of fs.readdirSync(releaseDir)) {
+        if (file.startsWith(pkgPrefix) && file.endsWith('.tgz')) {
+          log(`Cleaning release/${file}...`, colors.yellow);
+          fs.rmSync(path.join(releaseDir, file), { force: true });
+        }
+      }
+    }
   }
   log('Clean completed.', colors.green);
 }
@@ -174,6 +218,15 @@ if (flags.test) {
 if (flags.build) {
   header('Step 3: Compiling TypeScript Packages');
   for (const pkg of packages) {
+    // If building atp-poser alone and atp-geometry/dist is missing, build atp-geometry first
+    if (pkg.name === 'atp-poser' && !packages.some((p) => p.name === 'atp-geometry')) {
+      const geomPkg = allPackages.find((p) => p.name === 'atp-geometry');
+      if (geomPkg && !fs.existsSync(path.join(geomPkg.dir, 'dist'))) {
+        log(`Prerequisite atp-geometry/dist not found; building ${geomPkg.name} first...`, colors.yellow);
+        run('yarn', ['workspace', geomPkg.name, 'build']);
+      }
+    }
+
     log(`Building ${pkg.name} (${pkg.folder})...`, colors.cyan);
     run('yarn', ['workspace', pkg.name, 'build']);
     const distPath = path.join(pkg.dir, 'dist');
